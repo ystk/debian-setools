@@ -689,3 +689,16 @@ const apol_vector_t *sefs_fcfile_get_file_list(const sefs_fcfile_t * fcfile)
 	}
 	return fcfile->fileList();
 }
+
+#if defined(__ARM_EABI__) && defined(__GNUC__) && (__GNUC__ > 4 || __GNUC__ == 4 && __GNUC_MINOR__ >= 4)
+// va_list mangling has been changed in g++ 4.4.
+// Add ABI <= g++-4.3 compatibility aliases.
+__asm__(".globl _ZN11sefs_fcfileC1EPFvPvPK11sefs_fclistiPKcS0_ES0_\n.set _ZN11sefs_fcfileC1EPFvPvPK11sefs_fclistiPKcS0_ES0_,_ZN11sefs_fcfileC1EPFvPvPK11sefs_fclistiPKcSt9__va_listES0_");
+__asm__(".globl _ZN11sefs_fcfileC1EPK11apol_vectorPFvPvPK11sefs_fclistiPKcS3_ES3_\n.set _ZN11sefs_fcfileC1EPK11apol_vectorPFvPvPK11sefs_fclistiPKcS3_ES3_,_ZN11sefs_fcfileC1EPK11apol_vectorPFvPvPK11sefs_fclistiPKcSt9__va_listES3_");
+__asm__(".globl _ZN11sefs_fcfileC1EPKcPFvPvPK11sefs_fclistiS1_S2_ES2_\n.set _ZN11sefs_fcfileC1EPKcPFvPvPK11sefs_fclistiS1_S2_ES2_,_ZN11sefs_fcfileC1EPKcPFvPvPK11sefs_fclistiS1_St9__va_listES2_");
+__asm__(".globl _ZN11sefs_fcfileC2EPFvPvPK11sefs_fclistiPKcS0_ES0_\n.set _ZN11sefs_fcfileC2EPFvPvPK11sefs_fclistiPKcS0_ES0_,_ZN11sefs_fcfileC2EPFvPvPK11sefs_fclistiPKcSt9__va_listES0_");
+__asm__(".globl _ZN11sefs_fcfileC2EPK11apol_vectorPFvPvPK11sefs_fclistiPKcS3_ES3_\n.set _ZN11sefs_fcfileC2EPK11apol_vectorPFvPvPK11sefs_fclistiPKcS3_ES3_,_ZN11sefs_fcfileC2EPK11apol_vectorPFvPvPK11sefs_fclistiPKcSt9__va_listES3_");
+__asm__(".globl _ZN11sefs_fcfileC2EPKcPFvPvPK11sefs_fclistiS1_S2_ES2_\n.set _ZN11sefs_fcfileC2EPKcPFvPvPK11sefs_fclistiS1_S2_ES2_,_ZN11sefs_fcfileC2EPKcPFvPvPK11sefs_fclistiS1_St9__va_listES2_");
+__asm__(".globl _ZN15sefs_filesystemC1EPKcPFvPvPK11sefs_fclistiS1_S2_ES2_\n.set _ZN15sefs_filesystemC1EPKcPFvPvPK11sefs_fclistiS1_S2_ES2_,_ZN15sefs_filesystemC1EPKcPFvPvPK11sefs_fclistiS1_St9__va_listES2_");
+__asm__(".globl _ZN15sefs_filesystemC2EPKcPFvPvPK11sefs_fclistiS1_S2_ES2_\n.set _ZN15sefs_filesystemC2EPKcPFvPvPK11sefs_fclistiS1_S2_ES2_,_ZN15sefs_filesystemC2EPKcPFvPvPK11sefs_fclistiS1_St9__va_listES2_");
+#endif

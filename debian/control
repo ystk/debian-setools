@@ -1,0 +1,194 @@
+Source: setools
+VCS-Git: git://git.debian.org/git/users/srivasta/debian/setools.git
+VCS-Browser: http://git.debian.org/?p=users/srivasta/debian/setools.git;a=summary
+Priority: optional
+Section: admin
+Maintainer: Manoj Srivastava <srivasta@debian.org>
+Standards-Version: 3.8.4.0
+XS-Python-Version: 2.4
+Build-Depends: tcl8.4-dev (>= 8.4.9) | tcl-dev (>= 8.4.9), libcap-dev,
+ tk8.4-dev (>= 8.4.9) | tk-dev (>= 8.4.9), bison, libcunit1-dev,
+ libgtk2.0-dev (>= 2.8), flex (>= 2.5.33-6), libglade2-dev,
+ libselinux1-dev (>= 2.0.85), libtool, libsepol1-dev (>= 2.0.37),
+ pkg-config, swig (>= 1.3.28), libsqlite3-dev (>= 3.2), libxml2-dev,
+ autoconf (>= 2.59), libsqlite3-dev (>= 3.2), python-all-dev (>= 2.3.5-11),
+ libglib2.0-dev, automake | automaken, cvs,
+ default-jdk-builddep [!alpha !arm !hppa]
+
+Package: setools
+Architecture: any
+Depends: ${shlibs:Depends}, tk8.4 (>= 8.4.9) | wish, bwidget (>= 1.8),
+  libsetools-tcl (= ${binary:Version})
+Description: tools for Security Enhanced Linux policy analysis
+ Security-enhanced Linux is a patch of the Linux kernel and a number
+ of utilities with enhanced security functionality designed to add
+ mandatory access controls to Linux. These are Tools for analysing
+ security policy on SELinux systems.
+
+Package: libsefs4
+Architecture: any
+Section: libs
+Depends: ${shlibs:Depends}
+Replaces: setools (<= 2.4-1)
+Description: Security Enhanced Linux file context management
+ Security-enhanced Linux is a patch of the Linux kernel and a number
+ of utilities with enhanced security functionality designed to add
+ mandatory access controls to Linux. This is a shared library for
+ indexing and analyzing a snapshot of security contexts for SELinux
+ file-system entities. Used primarily by setools, but may be of use
+ for other packages.
+
+Package: libsefs-dev
+Section: libdevel
+Replaces: setools (<= 2.4-1)
+Architecture: any
+Depends: ${shlibs:Depends}, libsefs4 (= ${binary:Version})
+Description: Security Enhanced Linux file context management development
+ Security-enhanced Linux is a patch of the Linux kernel and a number
+ of utilities with enhanced security functionality designed to add
+ mandatory access controls to Linux.  This package contains the
+ headers and archives used for linking to the library routines used
+ for indexing and analyzing a snapshot of security contexts for
+ SELinux file-system entities.
+
+Package: libseaudit4
+Architecture: any
+Section: libs
+Replaces: setools (<= 2.4-1)
+Depends: ${shlibs:Depends}
+Description: Security Enhanced Linux audit message parsing library
+ Security-enhanced Linux is a patch of the Linux kernel and a number
+ of utilities with enhanced security functionality designed to add
+ mandatory access controls to Linux.  This is the shared library used
+ for parsing and filter SELinux audit messages in log files. Primarily
+ used by Tresys tools, but may be of use for other packages.
+
+Package: libseaudit-dev
+Section: libdevel
+Replaces: setools (<= 2.4-1)
+Architecture: any
+Depends: ${shlibs:Depends}, libseaudit4 (= ${binary:Version})
+Description: Security Enhanced Linux audit message parser development
+ Security-enhanced Linux is a patch of the Linux kernel and a number
+ of utilities with enhanced security functionality designed to add
+ mandatory access controls to Linux.  This package contains the
+ headers and archives used for linking to the library routines used to
+ parse and filter SELinux audit log messages.
+
+Package: libapol4
+Architecture: any
+Section: libs
+Replaces: setools (<= 2.4-1)
+Depends: ${shlibs:Depends}
+Description: Security Enhanced Linux policy analysis library
+ Security-enhanced Linux is a patch of the Linux kernel and a number
+ of utilities with enhanced security functionality designed to add
+ mandatory access controls to Linux.  This is the setools policy
+ analysis library.
+
+Package: libapol-dev
+Section: libdevel
+Architecture: any
+Replaces: setools (<= 2.4-1)
+Depends: ${shlibs:Depends}, libapol4 (= ${binary:Version})
+Description: Security Enhanced Linux policy analysis development
+ Security-enhanced Linux is a patch of the Linux kernel and a number
+ of utilities with enhanced security functionality designed to add
+ mandatory access controls to Linux.  This package contains the
+ headers and archives used for linking to the library routines used in
+ the setools policy analysis library.
+
+Package: libpoldiff1
+Architecture: any
+Section: libs
+Replaces: setools (<= 2.4-1)
+Depends: ${shlibs:Depends}
+Description: Security Enhanced Linux semantic policy differences library
+ Security-enhanced Linux is a patch of the Linux kernel and a number
+ of utilities with enhanced security functionality designed to add
+ mandatory access controls to Linux.  libpoldiff is a library to be
+ used in conjunction with libapol to find "semantic" differences
+ between policies. libpoldiff operates by breaking a policy into
+ various 'policy items'.
+
+Package: libpoldiff-dev
+Section: libdevel
+Architecture: any
+Replaces: setools (<= 2.4-1)
+Depends: ${shlibs:Depends}, libpoldiff1 (= ${binary:Version})
+Description: Security Enhanced Linux semantic policy differences development
+ Security-enhanced Linux is a patch of the Linux kernel and a number
+ of utilities with enhanced security functionality designed to add
+ mandatory access controls to Linux.  This package contains the
+ headers and archives used for linking to the library routines used in
+ the semantic policy differences library.
+
+Package: libqpol1
+Architecture: any
+Section: libs
+Replaces: setools (<= 2.4-1)
+Depends: ${shlibs:Depends}
+Description: Security Enhanced Linux policy abstraction library
+ Security-enhanced Linux is a patch of the Linux kernel and a number
+ of utilities with enhanced security functionality designed to add
+ mandatory access controls to Linux.  This package contains a library
+ that abstracts security policy internals, and is used by other
+ setools and library packages.
+
+Package: libqpol-dev
+Section: libdevel
+Architecture: any
+Replaces: setools (<= 2.4-1)
+Depends: ${shlibs:Depends}, libqpol1 (= ${binary:Version})
+Description: Security Enhanced Linux policy abstraction development
+ Security-enhanced Linux is a patch of the Linux kernel and a number
+ of utilities with enhanced security functionality designed to add
+ mandatory access controls to Linux.  This package contains the
+ headers and archives used for linking to the library routines used in
+ the policy abstraction library.
+
+
+Package: libsetools-jni
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: SETools Java bindings (architecture-dependent)
+ Security-enhanced Linux is a patch of the Linux kernel and a number
+ of utilities with enhanced security functionality designed to add
+ mandatory access controls to Linux.  This package includes the
+ architecture-dependent library files needed for libsetools-java.
+
+Package: libsetools-java
+Section: java
+Architecture: all
+Depends: java-gcj-compat | java2-runtime,
+          libsetools-jni (>= ${source:Version}),
+          libsetools-jni (<< ${source:Version}.1~)
+Description: SETools Java bindings (architecture-independent)
+ SETools is a collection  tools for analysing security policyon SELinux
+ systems. This package includes Java bindings for the following
+ setools libraries: libapol, libpoldiff, libqpol, libseaudit, and
+ libsefs.
+
+
+Package: libsetools-tcl
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}
+Description: SETools Tcl bindings
+ SETools is a collection  tools for analysing security policyon SELinux
+ systems. This package includes Tcl bindings for the following setools
+ libraries: libapol, libpoldiff, libqpol, libseaudit, and libsefs.
+
+Package: python-setools
+Section: python
+Architecture: any
+Depends: ${shlibs:Depends}, ${python:Depends}, python-support
+Provides: ${python:Provides}
+Description: SETools Python bindings
+ SETools is a collection  tools for analysing security policyon SELinux
+ systems. This package includes Python bindings for the following
+ setools libraries: libapol, libpoldiff, libqpol, libseaudit, and
+ libsefs.
+
+

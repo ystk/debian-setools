@@ -1302,3 +1302,12 @@ bool sefs_db_is_db(const char *filename)
 {
 	return sefs_db::isDB(filename);
 }
+
+#if defined(__ARM_EABI__) && defined(__GNUC__) && (__GNUC__ > 4 || __GNUC__ == 4 && __GNUC_MINOR__ >= 4)
+// va_list mangling has been changed in g++ 4.4.
+// Add ABI <= g++-4.3 compatibility aliases.
+__asm__(".globl _ZN7sefs_dbC1EP15sefs_filesystemPFvPvPK11sefs_fclistiPKcS2_ES2_\n.set _ZN7sefs_dbC1EP15sefs_filesystemPFvPvPK11sefs_fclistiPKcS2_ES2_,_ZN7sefs_dbC1EP15sefs_filesystemPFvPvPK11sefs_fclistiPKcSt9__va_listES2_");
+__asm__(".globl _ZN7sefs_dbC1EPKcPFvPvPK11sefs_fclistiS1_S2_ES2_\n.set _ZN7sefs_dbC1EPKcPFvPvPK11sefs_fclistiS1_S2_ES2_,_ZN7sefs_dbC1EPKcPFvPvPK11sefs_fclistiS1_St9__va_listES2_");
+__asm__(".globl _ZN7sefs_dbC2EP15sefs_filesystemPFvPvPK11sefs_fclistiPKcS2_ES2_\n.set _ZN7sefs_dbC2EP15sefs_filesystemPFvPvPK11sefs_fclistiPKcS2_ES2_,_ZN7sefs_dbC2EP15sefs_filesystemPFvPvPK11sefs_fclistiPKcSt9__va_listES2_");
+__asm__(".globl _ZN7sefs_dbC2EPKcPFvPvPK11sefs_fclistiS1_S2_ES2_\n.set _ZN7sefs_dbC2EPKcPFvPvPK11sefs_fclistiS1_S2_ES2_,_ZN7sefs_dbC2EPKcPFvPvPK11sefs_fclistiS1_St9__va_listES2_");
+#endif

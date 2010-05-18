@@ -1,0 +1,3 @@
+/etc/logwatch/scripts/services/seaudit-report-service
+/etc/logwatch/conf/logfiles/seaudit-report-group.conf
+/etc/logwatch/conf/services/seaudit-report-service.conf

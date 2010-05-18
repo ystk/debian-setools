@@ -22,7 +22,7 @@ libsefs_version=4.0.2
 libseaudit_soversion=4
 libseaudit_version=4.3
 
-setoolsdir='${prefix}/share/setools-3.3'
+setoolsdir='${prefix}/share/setools/3.3'
 javadir='${prefix}/share/java'
 
 version_min_sepol_major=1
@@ -63,7 +63,7 @@ if test ${ac_cv_prog_cc_c99} = "no"; then
 fi
 AC_PROG_CXX
 AC_LANG([C])
-AC_PROG_LIBTOOL
+AC_PROG_RANLIB
 AC_PROG_LN_S
 AC_PROG_LEX
 AC_PROG_YACC
@@ -368,7 +368,7 @@ fi
 if test "x${enable_debug}" = xyes; then
    TCL_AUTOPATH+=' $(top_builddir)/libqpol/swig/tcl $(top_builddir)/libapol/swig/tcl $(top_builddir)/libsefs/swig/tcl $(top_builddir)/libpolsearch/swig/tcl $(top_builddir)/apol'
 else
-   TCL_AUTOPATH+=' $(libdir)/setools'
+   TCL_AUTOPATH+=' $(libdir)/setools $(libdir)/setools/apol $(libdir)/setools/apol_tcl $(libdir)/setools/sefs $(libdir)/setools/qpol $(libdir)/setools/poldiff $(libdir)/setools/seaudit '
 fi
 AC_SUBST(TCL_AUTOPATH)
 
@@ -872,7 +872,6 @@ AC_CONFIG_FILES([Makefile VERSION \
                  seaudit/Makefile \
                  sediff/Makefile \
                  man/Makefile \
-                 debian/Makefile \
                  packages/Makefile packages/rpm/Makefile \
                  packages/libqpol.pc packages/libapol.pc packages/libpoldiff.pc packages/libseaudit.pc packages/libsefs.pc])
 

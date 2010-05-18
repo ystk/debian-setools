@@ -764,3 +764,11 @@ bool query_str_compare(const char *target, const char *str, const regex_t * rege
 		return false;
 	}
 }
+
+#if defined(__ARM_EABI__) && defined(__GNUC__) && (__GNUC__ > 4 || __GNUC__ == 4 && __GNUC_MINOR__ >= 4)
+// va_list mangling has been changed in g++ 4.4.
+// Add ABI <= g++-4.3 compatibility aliases.
+__asm__(".globl _ZN11sefs_fclistC1E16sefs_fclist_typePFvPvPKS_iPKcS1_ES1_\n.set _ZN11sefs_fclistC1E16sefs_fclist_typePFvPvPKS_iPKcS1_ES1_,_ZN11sefs_fclistC1E16sefs_fclist_typePFvPvPKS_iPKcSt9__va_listES1_");
+__asm__(".globl _ZN11sefs_fclistC2E16sefs_fclist_typePFvPvPKS_iPKcS1_ES1_\n.set _ZN11sefs_fclistC2E16sefs_fclist_typePFvPvPKS_iPKcS1_ES1_,_ZN11sefs_fclistC2E16sefs_fclist_typePFvPvPKS_iPKcSt9__va_listES1_");
+__asm__(".globl _ZNK11sefs_fclist9handleMsgEiPKcPv\n.set _ZNK11sefs_fclist9handleMsgEiPKcPv,_ZNK11sefs_fclist9handleMsgEiPKcSt9__va_list");
+#endif

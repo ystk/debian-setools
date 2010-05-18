@@ -731,3 +731,10 @@ extern const char *sefs_filesystem_get_dev_name(sefs_filesystem_t * fs, const de
 	}
 	return dev_name;
 }
+
+#if defined(__ARM_EABI__) && defined(__GNUC__) && (__GNUC__ > 4 || __GNUC__ == 4 && __GNUC_MINOR__ >= 4)
+// va_list mangling has been changed in g++ 4.4.
+// Add ABI <= g++-4.3 compatibility aliases.
+__asm__(".globl _ZN15sefs_filesystemC1EPKcPFvPvPK11sefs_fclistiS1_S2_ES2_\n.set _ZN15sefs_filesystemC1EPKcPFvPvPK11sefs_fclistiS1_S2_ES2_,_ZN15sefs_filesystemC1EPKcPFvPvPK11sefs_fclistiS1_St9__va_listES2_");
+__asm__(".globl _ZN15sefs_filesystemC2EPKcPFvPvPK11sefs_fclistiS1_S2_ES2_\n.set _ZN15sefs_filesystemC2EPKcPFvPvPK11sefs_fclistiS1_S2_ES2_,_ZN15sefs_filesystemC2EPKcPFvPvPK11sefs_fclistiS1_St9__va_listES2_");
+#endif

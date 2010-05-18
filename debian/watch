@@ -1,0 +1,9 @@
+# format version number, currently 2; this line is compulsory!
+version=3
+
+opts=dversionmangle=s/\.ds// \
+http://oss.tresys.com/projects/setools/wiki/download \
+http://oss.tresys.com/projects/setools/chrome/site/dists/setools-.*/setools-(.*)\.tar\.bz2 \
+      debian debian/urepack
+
+# arch-tag: f80009f9-c9e3-42eb-afbf-9d97a73b8b1d
