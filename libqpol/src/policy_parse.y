@@ -56,7 +56,7 @@
 #include <sepol/policydb/flask.h>
 #include <sepol/policydb/hierarchy.h>
 #ifdef HAVE_SEPOL_POLICYCAPS
-	#include <sepol/policydb/polcaps.h>
+#include <sepol/policydb/polcaps.h>
 #endif
 
 #include "queue.h"
@@ -98,6 +98,7 @@ extern char *qpol_src_inputlim;/* end of data */
 %type <require_func> require_decl_def
 
 %token PATH
+%token FILENAME
 %token CLONE
 %token COMMON
 %token CLASS
@@ -109,6 +110,7 @@ extern char *qpol_src_inputlim;/* end of data */
 %token ROLES
 %token TYPEALIAS
 %token TYPEATTRIBUTE
+%token TYPEBOUNDS
 %token TYPE
 %token TYPES
 %token ALIAS
@@ -139,6 +141,7 @@ extern char *qpol_src_inputlim;/* end of data */
 %token TARGET
 %token SAMEUSER
 %token FSCON PORTCON NETIFCON NODECON 
+%token PIRQCON IOMEMCON IOPORTCON PCIDEVICECON
 %token FSUSEXATTR FSUSETASK FSUSETRANS FSUSEPSID
 %token GENFSCON
 %token U1 U2 U3 R1 R2 R3 T1 T2 T3 L1 L2 H1 H2
@@ -170,7 +173,7 @@ base_policy             : { if (define_policy(pass, 0) == -1) return -1; }
 			  opt_mls te_rbac users opt_constraints 
                          { if (pass == 1) { if (policydb_index_bools(policydbp)) return -1;}
 			   else if (pass == 2) { if (policydb_index_others(NULL, policydbp, 0)) return -1;}}
-			  initial_sid_contexts opt_fs_contexts opt_fs_uses opt_genfs_contexts net_contexts 
+			  initial_sid_contexts opt_fs_contexts opt_fs_uses opt_genfs_contexts net_contexts opt_dev_contexts
 			;
 classes			: class_def 
 			| classes class_def
@@ -213,6 +216,8 @@ mls			: sensitivities dominance opt_categories levels mlspolicy
 sensitivities	 	: sensitivity_def 
 			| sensitivities sensitivity_def
 			;
+/* Need to call define_mls here, as we are working with files */
+/* only, not command line options */
 sensitivity_def		: SENSITIVITY identifier alias_def ';'
 			{if (define_mls() | define_sens()) return -1;}
 			| SENSITIVITY identifier ';'
@@ -275,11 +280,12 @@ te_decl			: attribute_def
                         | type_def
                         | typealias_def
                         | typeattribute_def
+                        | typebounds_def
                         | bool_def
                         | transition_def
                         | range_trans_def
                         | te_avtab_def
-                        | permissive_def
+			| permissive_def
 			;
 attribute_def           : ATTRIBUTE identifier ';'
                         { if (define_attrib()) return -1;}
@@ -295,6 +301,9 @@ typealias_def           : TYPEALIAS identifier alias_def ';'
 typeattribute_def	: TYPEATTRIBUTE identifier id_comma_list ';'
 			{if (define_typeattribute()) return -1;}
 			;
+typebounds_def          : TYPEBOUNDS identifier id_comma_list ';'
+                        {if (define_typebounds()) return -1;}
+                        ;
 opt_attr_list           : ',' id_comma_list
 			| 
 			;
@@ -352,7 +361,10 @@ cond_rule_def           : cond_transition_def
 			| require_block
 			{ $$ = NULL; }
                         ;
-cond_transition_def	: TYPE_TRANSITION names names ':' names identifier ';'
+cond_transition_def	: TYPE_TRANSITION names names ':' names identifier filename ';'
+                        { $$ = define_cond_filename_trans() ;
+                          if ($$ == COND_ERR) return -1;}
+                        | TYPE_TRANSITION names names ':' names identifier ';'
                         { $$ = define_cond_compute_type(AVRULE_TRANSITION) ;
                           if ($$ == COND_ERR) return -1;}
                         | TYPE_MEMBER names names ':' names identifier ';'
@@ -387,7 +399,9 @@ cond_dontaudit_def	: DONTAUDIT names names ':' names names ';'
 			{ $$ = define_cond_te_avtab(AVRULE_DONTAUDIT);
                           if ($$ == COND_ERR) return -1; }
 		        ;
-transition_def		: TYPE_TRANSITION names names ':' names identifier ';'
+transition_def		: TYPE_TRANSITION  names names ':' names identifier filename ';'
+			{if (define_filename_trans()) return -1; }
+			| TYPE_TRANSITION names names ':' names identifier ';'
                         {if (define_compute_type(AVRULE_TRANSITION)) return -1;}
                         | TYPE_MEMBER names names ':' names identifier ';'
                         {if (define_compute_type(AVRULE_MEMBER)) return -1;}
@@ -574,6 +588,32 @@ initial_sid_contexts	: initial_sid_context_def
 initial_sid_context_def	: SID identifier security_context_def
 			{if (define_initial_sid_context()) return -1;}
 			;
+opt_dev_contexts	: dev_contexts |
+			;
+dev_contexts		: dev_context_def
+			| dev_contexts dev_context_def
+			;
+dev_context_def		: pirq_context_def |
+			  iomem_context_def |
+			  ioport_context_def |
+			  pci_context_def
+			;
+pirq_context_def 	: PIRQCON number security_context_def
+		        {if (define_pirq_context($2)) return -1;}
+		        ;
+iomem_context_def	: IOMEMCON number security_context_def
+		        {if (define_iomem_context($2,$2)) return -1;}
+		        | IOMEMCON number '-' number security_context_def
+		        {if (define_iomem_context($2,$4)) return -1;}
+		        ;
+ioport_context_def	: IOPORTCON number security_context_def
+			{if (define_ioport_context($2,$2)) return -1;}
+			| IOPORTCON number '-' number security_context_def
+			{if (define_ioport_context($2,$4)) return -1;}
+			;
+pci_context_def  	: PCIDEVICECON number security_context_def
+		        {if (define_pcidevice_context($2)) return -1;}
+		        ;
 opt_fs_contexts         : fs_contexts 
                         |
                         ;
@@ -717,6 +757,9 @@ identifier		: IDENTIFIER
 			;
 path     		: PATH
 			{ if (insert_id(yytext,0)) return -1; }
+			;
+filename		: FILENAME
+			{ yytext[strlen(yytext) - 1] = '\0'; if (insert_id(yytext + 1,0)) return -1; }
 			;
 number			: NUMBER 
 			{ $$ = strtoul(yytext,NULL,0); }

@@ -127,8 +127,8 @@ proc ApolTop::openPolicyPath {ppath} {
                         apol_tcl_open_policy $ppath
                     } \
                 } p] || $p == "NULL"} {
-        tk_messageBox -icon error -type ok -title "Open Policy" \
-            -message "The selected file does not appear to be a valid SELinux Policy.\n\n[apol_tcl_get_error_string]"
+        tk_messageBox -icon error -type ok -title "Open Policy" -parent . \
+            -message "[apol_tcl_get_error_string]"
         return -1  ;# indicates failed to open policy
     }
 
@@ -231,7 +231,7 @@ proc ApolTop::_create_toplevel {} {
     set menus {
         "&File" {} file 0 {
             {command "&Open..." {} "Open a new policy" {Ctrl o} -command ApolTop::_open_policy}
-            {command "&Close" {tag_policy_open} "Close current polocy" {Ctrl w} -command ApolTop::_close_policy}
+            {command "&Close" {tag_policy_open} "Close current polocy" {Ctrl w} -command ApolTop::_user_close_policy}
             {separator}
             {cascade "&Recent Files" {} recent 0 {}}
             {separator}
@@ -477,6 +477,7 @@ proc ApolTop::_toplevel_update_stats {} {
         "types" new_apol_type_query_t
         "attribs" new_apol_attr_query_t
     }
+    
     foreach {key func} $query_funcs {
         set q [$func]
         set v [$q run $::ApolTop::policy]
@@ -541,17 +542,26 @@ proc ApolTop::_open_policy {} {
     Apol_Open_Policy_Dialog::getPolicyPath $last_policy_path
 }
 
+proc ApolTop::_user_close_policy {} {
+	variable last_policy_path
+
+	_close_policy
+	set last_policy_path {}
+}
+
 proc ApolTop::_close_policy {} {
     variable policy_version_string {}
     variable policy_stats_summary {}
 
     wm title . "SELinux Policy Analysis"
-
+    set i 0
     Apol_Progress_Dialog::wait "apol" "Closing policy." \
         {
             variable tabs
             foreach tab $tabs {
-                [lindex $tab 0]::close
+                if {[catch [lindex $tab 0]::close]} {
+                set i [expr $i+2]
+                }
             }
             Apol_Perms_Map::close
             variable policy
@@ -577,6 +587,7 @@ proc ApolTop::_exit {} {
     if {$policy != {}} {
         _close_policy
     }
+    
     Apol_File_Contexts::close
     _write_configuration_file
     exit
@@ -607,9 +618,7 @@ proc ApolTop::_goto {} {
 }
 
 proc ApolTop::_open_query_file {} {
-    set types {
-        {"Query files" {$ApolTop::query_file_ext}}
-    }
+    set types " {\"Query files\" { $ApolTop::query_file_ext }} "
     set query_file [tk_getOpenFile -filetypes $types -title "Open Apol Query" \
                         -defaultextension $ApolTop::query_file_ext -parent .]
     if {$query_file != {}} {
@@ -646,9 +655,7 @@ proc ApolTop::_open_query_file {} {
 }
 
 proc ApolTop::_save_query_file {} {
-    set types {
-        {"Query files" {$ApolTop::query_file_ext}}
-    }
+    set types " {\"Query files\" {$ApolTop::query_file_ext}} "
     set query_file [tk_getSaveFile -title "Save Apol Query" \
                         -defaultextension $ApolTop::query_file_ext \
                         -filetypes $types -parent .]
@@ -1131,31 +1138,50 @@ proc handle_args {argv0 argv} {
         }
         incr argvp
     }
-    if {[llength $argv] - $argvp > 0} {
+
+	set arglen [expr [llength $argv]-$argvp]
+    set ppath {}
+	if {$arglen <= 0} {
+		return {}
+	} elseif {$arglen == 1} {
         set path_type $::APOL_POLICY_PATH_TYPE_MONOLITHIC
         set policy_file [lindex $argv $argvp]
-        set ppath {}
-        if {[llength $argv] - $argvp > 1} {
-            set path_type $::APOL_POLICY_PATH_TYPE_MODULAR
-            set mod_paths [list_to_str_vector [lrange $argv [expr {$argvp + 1}] end]]
-        } else {
-            set mod_paths [list_to_str_vector {}]
-            if {[apol_file_is_policy_path_list $policy_file]} {
-                set ppath [new_apol_policy_path_t $policy_file]
-            }
-        }
-        if {$ppath == {}} {
-            set ppath [new_apol_policy_path_t $path_type $policy_file $mod_paths]
-        }
-        if {$ppath == {}} {
-            puts stderr "Error loading $policy_file."
-        } else {
-            $ppath -acquire
-        }
-        return $ppath
-    } else {
-        return {}
+		set mod_paths [list_to_str_vector {}]
+		if {[apol_file_is_policy_path_list $policy_file]} {
+			set ppath [new_apol_policy_path_t $policy_file]
+		}
+	} elseif {$arglen > 1} {
+		set path_type $::APOL_POLICY_PATH_TYPE_MODULAR
+		set policy_file {} 
+		foreach f [lrange $argv $argvp end] {
+			if {[catch {Apol_Open_Policy_Dialog::getModuleInfo $f} modinfo]} {
+				tk_messageBox -icon error -type ok -title "Module access error" -message $modinfo
+			} else {
+				foreach {name vers type} $modinfo {break}
+				if {$type == 1} {	;# This file is a base 'module'
+					if {$policy_file != {} && $policy_file != $f} {
+							set rsp [tk_messageBox -icon error -type okcancel -title "Open Module" -message "Multiple base entries found." -detail "Current file: $policy_file\n\nNew file: $f\n\nClick OK to ignore new file, Cancel to exit"]
+							if {$rsp == "cancel"} { exit 1}
+					} else {
+						set policy_file $f
+					}
+				} else {	;# Append regular modules to the list.
+					lappend module_list $f
+				}
+			}
+		}
+		set mod_paths [list_to_str_vector $module_list]
+	}
+
+    if {$ppath == {}} {
+        set ppath [new_apol_policy_path_t $path_type $policy_file $mod_paths]
     }
+    if {$ppath == {}} {
+        puts stderr "Error loading $policy_file."
+    } else {
+        $ppath -acquire
+    }
+    return $ppath
 }
 
 proc print_help {program_name verbose} {
@@ -1179,9 +1205,17 @@ proc print_init {s} {
 }
 
 if {[catch {tcl_config_init_libraries}]} {
-    puts stderr "The SETools libraries could not be found in one of these subdirectories:\n\y[join $auto_path "\n\t"]"
+    puts stderr "FAILED. The SETools libraries could not be found in any of these subdirectories:\n\t[join $auto_path "\n\t"]"
     exit -1
 }
+
+print_init "Initializing Tk... "
+if {[catch {package require Tk}]} {
+    puts stderr "FAILED. This library could not be found in any of these subdirectories:\n\t[join $auto_path "\n\t"]"
+    puts stderr "This may indicate a problem with the tcl package's auto_path variable.\n"
+    exit -1
+}
+puts "done."
 
 set path [handle_args $argv0 $argv]
 ApolTop::main

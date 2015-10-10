@@ -6,7 +6,7 @@
  */
 
 /*
- * Author : Stephen Smalley, <sds@epoch.ncsc.mil>
+ * Author : Stephen Smalley, <sds@epoch.ncsc.mil> 
  */
 
 /*
@@ -16,7 +16,7 @@
  *
  * Updated: David Caplan, <dac@tresys.com>
  *
- *	Added conditional policy language extensions
+ * 	Added conditional policy language extensions
  *
  * Updated: Joshua Brindle <jbrindle@tresys.com>
  *	    Karl MacMillan <kmacmillan@mentalrootkit.com>
@@ -28,7 +28,7 @@
  * Copyright (C) 2003 - 2008 Tresys Technology, LLC
  * Copyright (C) 2007 Red Hat Inc.
  *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
+ *  	it under the terms of the GNU General Public License as published by
  *	the Free Software Foundation, version 2.
  */
 
@@ -522,7 +522,7 @@ int define_av_perms(int inherits)
 		cladatum->comdatum = comdatum;
 
 		/*
-		 * Class-specific permissions start with values
+		 * Class-specific permissions start with values 
 		 * after the last common permission.
 		 */
 		cladatum->permissions.nprim += comdatum->permissions.nprim;
@@ -542,7 +542,7 @@ int define_av_perms(int inherits)
 		}
 		if (inherits) {
 			/*
-			 * Class-specific permissions and
+			 * Class-specific permissions and 
 			 * common permissions exist in the same
 			 * name space.
 			 */
@@ -1030,7 +1030,19 @@ static int add_aliases_to_type(type_datum_t * type)
 			goto cleanup;
 		}
 		case 0:
+			break;
 		case 1:{
+			/* ret == 1 means the alias was required and therefore already
+			 * has a value. Set it up as an alias with a different primary. */
+			type_datum_destroy(aliasdatum);
+			free(aliasdatum);
+
+			aliasdatum = hashtab_search(policydbp->symtab[SYM_TYPES].table, id);
+			assert(aliasdatum);
+
+			aliasdatum->primary = type->s.value;
+			aliasdatum->flavor = TYPE_ALIAS;
+
 			break;
 		}
 		default:{
@@ -1142,6 +1154,76 @@ int define_typeattribute(void)
 	return 0;
 }
 
+static int define_typebounds_helper(char *bounds_id, char *type_id)
+{
+	type_datum_t *bounds, *type;
+
+	if (!is_id_in_scope(SYM_TYPES, bounds_id)) {
+		yyerror2("type %s is not within scope", bounds_id);
+		return -1;
+	}
+
+	bounds = hashtab_search(policydbp->p_types.table, bounds_id);
+	if (!bounds || bounds->flavor == TYPE_ATTRIB) {
+		yyerror2("hoge unknown type %s", bounds_id);
+		return -1;
+	}
+
+	if (!is_id_in_scope(SYM_TYPES, type_id)) {
+		yyerror2("type %s is not within scope", type_id);
+		return -1;
+	}
+
+	type = hashtab_search(policydbp->p_types.table, type_id);
+	if (!type || type->flavor == TYPE_ATTRIB) {
+		yyerror2("type %s is not declared", type_id);
+		return -1;
+	}
+
+	if (type->flavor == TYPE_TYPE && !type->primary) {
+		type = policydbp->type_val_to_struct[type->s.value - 1];
+	} else if (type->flavor == TYPE_ALIAS) {
+		type = policydbp->type_val_to_struct[type->primary - 1];
+	}
+
+	if (!type->bounds)
+		type->bounds = bounds->s.value;
+	else if (type->bounds != bounds->s.value) {
+		yyerror2("type %s has inconsistent master {%s,%s}",
+			 type_id,
+			 policydbp->p_type_val_to_name[type->bounds - 1], policydbp->p_type_val_to_name[bounds->s.value - 1]);
+		return -1;
+	}
+
+	return 0;
+}
+
+int define_typebounds(void)
+{
+	char *bounds, *id;
+
+	if (pass == 1) {
+		while ((id = queue_remove(id_queue)))
+			free(id);
+		return 0;
+	}
+
+	bounds = (char *)queue_remove(id_queue);
+	if (!bounds) {
+		yyerror("no type name for typebounds definition?");
+		return -1;
+	}
+
+	while ((id = queue_remove(id_queue))) {
+		if (define_typebounds_helper(bounds, id))
+			return -1;
+		free(id);
+	}
+	free(bounds);
+
+	return 0;
+}
+
 int define_type(int alias)
 {
 	char *id;
@@ -1149,12 +1231,32 @@ int define_type(int alias)
 	int newattr = 0;
 
 	if (pass == 2) {
-		while ((id = queue_remove(id_queue)))
+		/*
+		 * If type name contains ".", we have to define boundary
+		 * relationship implicitly to keep compatibility with
+		 * old name based hierarchy.
+		 */
+		if ((id = queue_remove(id_queue))) {
+			char *bounds, *delim;
+
+			if ((delim = strrchr(id, '.'))
+			    && (bounds = strdup(id))) {
+				bounds[(size_t) (delim - id)] = '\0';
+
+				if (define_typebounds_helper(bounds, id))
+					return -1;
+				free(bounds);
+			}
 			free(id);
+		}
+
 		if (alias) {
 			while ((id = queue_remove(id_queue)))
 				free(id);
 		}
+
+		while ((id = queue_remove(id_queue)))
+			free(id);
 		return 0;
 	}
 
@@ -1391,8 +1493,8 @@ int define_compute_type(int which)
 	switch (retval) {
 	case 1:{
 		/* append this avrule to the end of the current rules list */
-		append_avrule(avrule);
-		return 0;
+	append_avrule(avrule);
+	return 0;
 	}
 	case 2:		       /* FALLTHROUGH */
 	case 0:{
@@ -2030,7 +2132,9 @@ int define_role_trans(void)
 	free(id);
 
 	/* This ebitmap business is just to ensure that there are not conflicting role_trans rules */
-#ifdef HAVE_SEPOL_USER_ROLE_MAPPING
+#ifdef HAVE_SEPOL_ROLE_ATTRS
+	if (role_set_expand(&roles, &e_roles, policydbp, NULL, NULL))
+#elif HAVE_SEPOL_USER_ROLE_MAPPING
 	if (role_set_expand(&roles, &e_roles, policydbp, NULL))
 #else
 	if (role_set_expand(&roles, &e_roles, policydbp))
@@ -2122,6 +2226,190 @@ int define_role_allow(void)
 
 	append_role_allow(ra);
 	return 0;
+}
+
+avrule_t *define_cond_filename_trans(void)
+{
+	yyerror("type transitions with a filename not allowed inside "
+		"conditionals\n");
+	return COND_ERR;
+}
+
+int define_filename_trans(void)
+{
+	char *id, *name = NULL;
+	type_set_t stypes, ttypes;
+	ebitmap_t e_stypes, e_ttypes;
+	ebitmap_t e_tclasses;
+	ebitmap_node_t *snode, *tnode, *cnode;
+	filename_trans_t *ft;
+	filename_trans_rule_t *ftr;
+	class_datum_t *cladatum;
+	type_datum_t *typdatum;
+	uint32_t otype;
+	unsigned int c, s, t;
+	int add;
+
+	if (pass == 1) {
+		/* stype */
+		while ((id = queue_remove(id_queue)))
+			free(id);
+		/* ttype */
+		while ((id = queue_remove(id_queue)))
+			free(id);
+		/* tclass */
+		while ((id = queue_remove(id_queue)))
+			free(id);
+		/* otype */
+		id = queue_remove(id_queue);
+		free(id);
+		/* name */
+		id = queue_remove(id_queue);
+		free(id);
+		return 0;
+	}
+
+
+	add = 1;
+	type_set_init(&stypes);
+	while ((id = queue_remove(id_queue))) {
+		if (set_types(&stypes, id, &add, 0))
+			goto bad;
+	}
+
+	add =1;
+	type_set_init(&ttypes);
+	while ((id = queue_remove(id_queue))) {
+		if (set_types(&ttypes, id, &add, 0))
+			goto bad;
+	}
+
+	ebitmap_init(&e_tclasses);
+	while ((id = queue_remove(id_queue))) {
+		if (!is_id_in_scope(SYM_CLASSES, id)) {
+			yyerror2("class %s is not within scope", id);
+			free(id);
+			goto bad;
+		}
+		cladatum = hashtab_search(policydbp->p_classes.table, id);
+		if (!cladatum) {
+			yyerror2("unknown class %s", id);
+			goto bad;
+		}
+		if (ebitmap_set_bit(&e_tclasses, cladatum->s.value - 1, TRUE)) {
+			yyerror("Out of memory");
+			goto bad;
+		}
+		free(id);
+	}
+
+	id = (char *)queue_remove(id_queue);
+	if (!id) {
+		yyerror("no otype in transition definition?");
+		goto bad;
+	}
+	if (!is_id_in_scope(SYM_TYPES, id)) {
+		yyerror2("type %s is not within scope", id);
+		free(id);
+		goto bad;
+	}
+	typdatum = hashtab_search(policydbp->p_types.table, id);
+	if (!typdatum) {
+		yyerror2("unknown type %s used in transition definition", id);
+		goto bad;
+	}
+	free(id);
+	otype = typdatum->s.value;
+
+	name = queue_remove(id_queue);
+	if (!name) {
+		yyerror("no pathname specified in filename_trans definition?");
+		goto bad;
+	}
+
+	/* We expand the class set into seperate rules.  We expand the types
+	 * just to make sure there are not duplicates.  They will get turned
+	 * into seperate rules later */
+	ebitmap_init(&e_stypes);
+	if (type_set_expand(&stypes, &e_stypes, policydbp, 1))
+		goto bad;
+
+	ebitmap_init(&e_ttypes);
+	if (type_set_expand(&ttypes, &e_ttypes, policydbp, 1))
+		goto bad;
+
+	ebitmap_for_each_bit(&e_tclasses, cnode, c) {
+		if (!ebitmap_node_get_bit(cnode, c))
+			continue;
+		ebitmap_for_each_bit(&e_stypes, snode, s) {
+			if (!ebitmap_node_get_bit(snode, s))
+				continue;
+			ebitmap_for_each_bit(&e_ttypes, tnode, t) {
+				if (!ebitmap_node_get_bit(tnode, t))
+					continue;
+	
+				for (ft = policydbp->filename_trans; ft; ft = ft->next) {
+					if (ft->stype == (s + 1) &&
+					    ft->ttype == (t + 1) &&
+					    ft->tclass == (c + 1) &&
+					    !strcmp(ft->name, name)) {
+						yyerror2("duplicate filename transition for: filename_trans %s %s %s:%s",
+							 name, 
+							 policydbp->p_type_val_to_name[s],
+							 policydbp->p_type_val_to_name[t],
+							 policydbp->p_class_val_to_name[c]);
+						goto bad;
+					}
+				}
+	
+				ft = malloc(sizeof(*ft));
+				if (!ft) {
+					yyerror("out of memory");
+					goto bad;
+				}
+				memset(ft, 0, sizeof(*ft));
+	
+				ft->next = policydbp->filename_trans;
+				policydbp->filename_trans = ft;
+	
+				ft->name = strdup(name);
+				if (!ft->name) {
+					yyerror("out of memory");
+					goto bad;
+				}
+				ft->stype = s + 1;
+				ft->ttype = t + 1;
+				ft->tclass = c + 1;
+				ft->otype = otype;
+			}
+		}
+	
+		/* Now add the real rule since we didn't find any duplicates */
+		ftr = malloc(sizeof(*ftr));
+		if (!ftr) {
+			yyerror("out of memory");
+			goto bad;
+		}
+		filename_trans_rule_init(ftr);
+		append_filename_trans(ftr);
+
+		ftr->name = strdup(name);
+		ftr->stypes = stypes;
+		ftr->ttypes = ttypes;
+		ftr->tclass = c + 1;
+		ftr->otype = otype;
+	}
+
+	free(name);
+	ebitmap_destroy(&e_stypes);
+	ebitmap_destroy(&e_ttypes);
+	ebitmap_destroy(&e_tclasses);
+
+	return 0;
+
+bad:
+	free(name);
+	return -1;
 }
 
 static constraint_expr_t *constraint_expr_clone(constraint_expr_t * expr)
@@ -3266,6 +3554,13 @@ int define_fs_context(unsigned int major, unsigned int minor)
 {
 	ocontext_t *newc, *c, *head;
 
+#ifdef SEPOL_TARGET_XEN
+	if (policydbp->target_platform != SEPOL_TARGET_SELINUX) {
+		yyerror("fscon not supported for target");
+		return -1;
+	}
+#endif
+
 	if (pass == 1) {
 		parse_security_context(NULL);
 		parse_security_context(NULL);
@@ -3317,11 +3612,270 @@ int define_fs_context(unsigned int major, unsigned int minor)
 	return 0;
 }
 
+int define_pirq_context(unsigned int pirq)
+{
+	ocontext_t *newc, *c, *l, *head;
+	char *id;
+
+#ifndef SEPOL_TARGET_XEN
+	yyerror("pirqcon not supported for target");
+	return -1;
+#else
+	if (policydbp->target_platform != SEPOL_TARGET_XEN) {
+		yyerror("pirqcon not supported for target");
+		return -1;
+	}
+
+	if (pass == 1) {
+		id = (char *)queue_remove(id_queue);
+		free(id);
+		parse_security_context(NULL);
+		return 0;
+	}
+
+	newc = malloc(sizeof(ocontext_t));
+	if (!newc) {
+		yyerror("out of memory");
+		return -1;
+	}
+	memset(newc, 0, sizeof(ocontext_t));
+
+	newc->u.pirq = pirq;
+
+	if (parse_security_context(&newc->context[0])) {
+		free(newc);
+		return -1;
+	}
+
+	head = policydbp->ocontexts[OCON_XEN_PIRQ];
+	for (l = NULL, c = head; c; l = c, c = c->next) {
+		unsigned int pirq2;
+
+		pirq2 = c->u.pirq;
+		if (pirq == pirq2) {
+			yyerror2("duplicate pirqcon entry for %d ", pirq);
+			goto bad;
+		}
+	}
+
+	if (l)
+		l->next = newc;
+	else
+		policydbp->ocontexts[OCON_XEN_PIRQ] = newc;
+
+	return 0;
+
+      bad:
+	free(newc);
+	return -1;
+#endif
+}
+
+int define_iomem_context(unsigned long low, unsigned long high)
+{
+	ocontext_t *newc, *c, *l, *head;
+	char *id;
+
+#ifndef SEPOL_TARGET_XEN
+	yyerror("iomemcon not supported for target");
+	return -1;
+#else
+	if (policydbp->target_platform != SEPOL_TARGET_XEN) {
+		yyerror("iomemcon not supported for target");
+		return -1;
+	}
+
+	if (pass == 1) {
+		id = (char *)queue_remove(id_queue);
+		free(id);
+		parse_security_context(NULL);
+		return 0;
+	}
+
+	newc = malloc(sizeof(ocontext_t));
+	if (!newc) {
+		yyerror("out of memory");
+		return -1;
+	}
+	memset(newc, 0, sizeof(ocontext_t));
+
+	newc->u.iomem.low_iomem = low;
+	newc->u.iomem.high_iomem = high;
+
+	if (low > high) {
+		yyerror2("low memory 0x%x exceeds high memory 0x%x", low, high);
+		free(newc);
+		return -1;
+	}
+
+	if (parse_security_context(&newc->context[0])) {
+		free(newc);
+		return -1;
+	}
+
+	head = policydbp->ocontexts[OCON_XEN_IOMEM];
+	for (l = NULL, c = head; c; l = c, c = c->next) {
+		unsigned int low2, high2;
+
+		low2 = c->u.iomem.low_iomem;
+		high2 = c->u.iomem.high_iomem;
+		if (low <= high2 && low2 <= high) {
+			yyerror2("iomemcon entry for 0x%x-0x%x overlaps with " "earlier entry 0x%x-0x%x", low, high, low2, high2);
+			goto bad;
+		}
+	}
+
+	if (l)
+		l->next = newc;
+	else
+		policydbp->ocontexts[OCON_XEN_IOMEM] = newc;
+
+	return 0;
+
+      bad:
+	free(newc);
+	return -1;
+#endif
+}
+
+int define_ioport_context(unsigned long low, unsigned long high)
+{
+	ocontext_t *newc, *c, *l, *head;
+	char *id;
+
+#ifndef SEPOL_TARGET_XEN
+	yyerror("ioportcon not supported for target");
+	return -1;
+#else
+	if (policydbp->target_platform != SEPOL_TARGET_XEN) {
+		yyerror("ioportcon not supported for target");
+		return -1;
+	}
+
+	if (pass == 1) {
+		id = (char *)queue_remove(id_queue);
+		free(id);
+		parse_security_context(NULL);
+		return 0;
+	}
+
+	newc = malloc(sizeof(ocontext_t));
+	if (!newc) {
+		yyerror("out of memory");
+		return -1;
+	}
+	memset(newc, 0, sizeof(ocontext_t));
+
+	newc->u.ioport.low_ioport = low;
+	newc->u.ioport.high_ioport = high;
+
+	if (low > high) {
+		yyerror2("low ioport 0x%x exceeds high ioport 0x%x", low, high);
+		free(newc);
+		return -1;
+	}
+
+	if (parse_security_context(&newc->context[0])) {
+		free(newc);
+		return -1;
+	}
+
+	head = policydbp->ocontexts[OCON_XEN_IOPORT];
+	for (l = NULL, c = head; c; l = c, c = c->next) {
+		unsigned int low2, high2;
+
+		low2 = c->u.ioport.low_ioport;
+		high2 = c->u.ioport.high_ioport;
+		if (low <= high2 && low2 <= high) {
+			yyerror2("ioportcon entry for 0x%x-0x%x overlaps with" "earlier entry 0x%x-0x%x", low, high, low2, high2);
+			goto bad;
+		}
+	}
+
+	if (l)
+		l->next = newc;
+	else
+		policydbp->ocontexts[OCON_XEN_IOPORT] = newc;
+
+	return 0;
+
+      bad:
+	free(newc);
+	return -1;
+#endif
+}
+
+int define_pcidevice_context(unsigned long device)
+{
+	ocontext_t *newc, *c, *l, *head;
+	char *id;
+
+#ifndef SEPOL_TARGET_XEN
+	yyerror("pcidevicecon not supported for target");
+	return -1;
+#else
+	if (policydbp->target_platform != SEPOL_TARGET_XEN) {
+		yyerror("pcidevicecon not supported for target");
+		return -1;
+	}
+
+	if (pass == 1) {
+		id = (char *)queue_remove(id_queue);
+		free(id);
+		parse_security_context(NULL);
+		return 0;
+	}
+
+	newc = malloc(sizeof(ocontext_t));
+	if (!newc) {
+		yyerror("out of memory");
+		return -1;
+	}
+	memset(newc, 0, sizeof(ocontext_t));
+
+	newc->u.device = device;
+
+	if (parse_security_context(&newc->context[0])) {
+		free(newc);
+		return -1;
+	}
+
+	head = policydbp->ocontexts[OCON_XEN_PCIDEVICE];
+	for (l = NULL, c = head; c; l = c, c = c->next) {
+		unsigned int device2;
+
+		device2 = c->u.device;
+		if (device == device2) {
+			yyerror2("duplicate pcidevicecon entry for 0x%x ", device);
+			goto bad;
+		}
+	}
+
+	if (l)
+		l->next = newc;
+	else
+		policydbp->ocontexts[OCON_XEN_PCIDEVICE] = newc;
+
+	return 0;
+
+      bad:
+	free(newc);
+	return -1;
+#endif
+}
+
 int define_port_context(unsigned int low, unsigned int high)
 {
 	ocontext_t *newc, *c, *l, *head;
 	unsigned int protocol;
 	char *id;
+
+#ifdef SEPOL_TARGET_XEN
+	if (policydbp->target_platform != SEPOL_TARGET_SELINUX) {
+		yyerror("portcon not supported for target");
+		return -1;
+	}
+#endif
 
 	if (pass == 1) {
 		id = (char *)queue_remove(id_queue);
@@ -3404,6 +3958,13 @@ int define_netif_context(void)
 {
 	ocontext_t *newc, *c, *head;
 
+#ifdef SEPOL_TARGET_XEN
+	if (policydbp->target_platform != SEPOL_TARGET_SELINUX) {
+		yyerror("netifcon not supported for target");
+		return -1;
+	}
+#endif
+
 	if (pass == 1) {
 		free(queue_remove(id_queue));
 		parse_security_context(NULL);
@@ -3458,6 +4019,13 @@ int define_ipv4_node_context()
 	int rc = 0;
 	struct in_addr addr, mask;
 	ocontext_t *newc, *c, *l, *head;
+
+#ifdef SEPOL_TARGET_XEN
+	if (policydbp->target_platform != SEPOL_TARGET_SELINUX) {
+		yyerror("nodecon not supported for target");
+		return -1;
+	}
+#endif
 
 	if (pass == 1) {
 		free(queue_remove(id_queue));
@@ -3540,6 +4108,13 @@ int define_ipv6_node_context(void)
 	struct in6_addr addr, mask;
 	ocontext_t *newc, *c, *l, *head;
 
+#ifdef SEPOL_TARGET_XEN
+	if (policydbp->target_platform != SEPOL_TARGET_SELINUX) {
+		yyerror("nodecon not supported for target");
+		return -1;
+	}
+#endif
+
 	if (pass == 1) {
 		free(queue_remove(id_queue));
 		free(queue_remove(id_queue));
@@ -3620,6 +4195,13 @@ int define_fs_use(int behavior)
 {
 	ocontext_t *newc, *c, *head;
 
+#ifdef SEPOL_TARGET_XEN
+	if (policydbp->target_platform != SEPOL_TARGET_SELINUX) {
+		yyerror("fsuse not supported for target");
+		return -1;
+	}
+#endif
+
 	if (pass == 1) {
 		free(queue_remove(id_queue));
 		if (behavior != SECURITY_FS_USE_PSIDS)
@@ -3673,6 +4255,13 @@ int define_genfs_context_helper(char *fstype, int has_type)
 	char *type = NULL;
 	int len, len2;
 
+#ifdef SEPOL_TARGET_XEN
+	if (policydbp->target_platform != SEPOL_TARGET_SELINUX) {
+		yyerror("genfs not supported for target");
+		return -1;
+	}
+#endif
+
 	if (pass == 1) {
 		free(fstype);
 		free(queue_remove(id_queue));
@@ -3703,6 +4292,7 @@ int define_genfs_context_helper(char *fstype, int has_type)
 		genfs = newgenfs;
 	} else {
 		free(fstype);
+		fstype=NULL;
 	}
 
 	newc = (ocontext_t *) malloc(sizeof(ocontext_t));

@@ -47,7 +47,7 @@
 
 enum opts
 {
-	OPT_HTML = 256, OPT_STYLESHEET, OPT_CONFIG
+	OPT_HTML = 256, OPT_STYLESHEET
 };
 
 static struct option const longopts[] = {
@@ -56,7 +56,7 @@ static struct option const longopts[] = {
 	{"output", required_argument, NULL, 'o'},
 	{"stylesheet", required_argument, NULL, OPT_STYLESHEET},
 	{"stdin", no_argument, NULL, 's'},
-	{"config", no_argument, NULL, OPT_CONFIG},
+	{"config", required_argument, NULL, 'c'},
 	{"help", no_argument, NULL, 'h'},
 	{"version", no_argument, NULL, 'V'},
 	{NULL, 0, NULL, 0}
@@ -100,7 +100,7 @@ static void seaudit_report_info_usage(const char *program_name, int brief)
 	printf("  -s, --stdin              read log data from standard input\n");
 	printf("  -m, --malformed          include malformed log messages\n");
 	printf("  -o FILE, --output=FILE   output to FILE\n");
-	printf("  --config=FILE            read configuration from FILE\n");
+	printf("  -c FILE, --config=FILE   read configuration from FILE\n");
 	printf("  --html                   set output format to HTML\n");
 	printf("  --stylesheet=FILE        HTML style sheet for formatting HTML report\n");
 	printf("                           (ignored if --html is not given)\n");
@@ -118,7 +118,7 @@ static void parse_command_line_args(int argc, char **argv)
 	char *configfile = NULL, *stylesheet = NULL;
 
 	/* get option arguments */
-	while ((optc = getopt_long(argc, argv, "smo:hV", longopts, NULL)) != -1) {
+	while ((optc = getopt_long(argc, argv, "smo:c:hV", longopts, NULL)) != -1) {
 		switch (optc) {
 		case 's':	       /* read LOGFILES from standard input */
 			read_stdin = 1;
@@ -129,7 +129,7 @@ static void parse_command_line_args(int argc, char **argv)
 		case 'o':	       /* output file name */
 			outfile = optarg;
 			break;
-		case OPT_CONFIG:      /* Alternate config file path */
+		case 'c':	      /* Alternate config file path */
 			configfile = optarg;
 			break;
 		case OPT_HTML:	       /* Set the output to format to html */

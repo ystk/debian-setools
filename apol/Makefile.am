@@ -20,6 +20,9 @@ dist_setools_DATA = apol_help.txt domaintrans_help.txt file_relabel_help.txt \
 	perm_maps/apol_perm_mapping_ver19 \
 	perm_maps/apol_perm_mapping_ver20 \
 	perm_maps/apol_perm_mapping_ver21 \
+	perm_maps/apol_perm_mapping_ver22 \
+	perm_maps/apol_perm_mapping_ver23 \
+	perm_maps/apol_perm_mapping_ver24 \
 	apol.gif
 
 EXTRA_DIST = \
@@ -109,8 +112,6 @@ init.tcl: Makefile
 	@echo "    package require sefs @libsefs_version@" >> $@
 	@echo "    print_init \"done.\nInitializing libapol_tcl... \"" >> $@
 	@echo "    package require apol_tcl @libapol_version@" >> $@
-	@echo "    print_init \"done.\nInitializing Tk... \"" >> $@
-	@echo "    package require Tk" >> $@
 	@echo "    print_init \"done.\n\"" >> $@
 	@echo "}" >> $@
 	@echo "proc tcl_config_get_install_dir {} {" >> $@

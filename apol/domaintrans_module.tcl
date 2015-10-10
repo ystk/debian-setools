@@ -128,9 +128,18 @@ proc Apol_Analysis_domaintrans::newAnalysis {} {
 }
 
 proc Apol_Analysis_domaintrans::updateAnalysis {f} {
+    variable vals
+
     if {[set rt [_checkParams]] != {}} {
         return $rt
     }
+
+    if {$vals(dir) == $::APOL_DOMAIN_TRANS_DIRECTION_FORWARD} {
+        $f.left configure -text "Forward Domain Transition"
+    } else {
+        $f.left configure -text "Reverse Domain Transition"
+    }
+
     set results [_analyze]
     _clearResultsDisplay $f
     _renderResults $f $results
@@ -313,12 +322,15 @@ proc Apol_Analysis_domaintrans::_maybeEnableAccess {} {
 ################# functions that do access filters #################
 
 proc Apol_Analysis_domaintrans::_createAccessDialog {} {
+    variable widgets
+    $widgets(access) configure -state disabled
     destroy .domaintrans_adv
     set d [Dialog .domaintrans_adv -modal local -separator 1 -title "Domain Transition Access Filter" -parent .]
     $d add -text "Close"
     _createAccessTargets [$d getframe]
     _createAccessClasses [$d getframe]
     $d draw
+    $widgets(access) configure -state normal
 }
 
 proc Apol_Analysis_domaintrans::_createAccessTargets {f} {

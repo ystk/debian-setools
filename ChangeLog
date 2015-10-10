@@ -1,3 +1,92 @@
+2013-01-08 Steve Lawrence <slawrence@tresys.com>
+
+	* SETools 3.3.8
+	* Fix bug preventing seaudit from starting by Jake Lightner.
+
+2013-01-08 Steve Lawrence <slawrence@tresys.com>
+
+	* Add python bindings for seinfo and sesearch by Dan Walsh.
+	* seinfo exits with an error status by Dan Walsh.
+	* Support for named file transition rules by Dan Walsh.
+	* Add support for default types in sesearch by Steve Lawrence.
+	* Man page updates for seinfo, seaudit, and sediff by Dan Walsh.
+
+2012-03-26  Chris PeBenito <cpebenito@tresys.com>
+	* Fix file type drop down list for open/close Apol query.
+
+2012-03-06  Chris PeBenito <cpebenito@tresys.com>
+	* Fix compile errors on new parameter in libsepol role_set_expand().
+
+2010-05-07  Spencer Shimko <sshimko@tresys.com>
+
+	* SETools 3.3.7.
+
+2010-04-30  Spencer Shimko <sshimko@tresys.com>
+
+	* Update the spec file for release.
+	* Update versions for release.
+
+2010-04-28  John Oliver <joliver@tresys.com>
+
+	* Restore close button in transitive info flow.
+	* Wrapped new policy db components so we can build against
+	  new and old SELinux userspace.
+
+2010-04-28 Spencer Shimko <sshimko@tresys.com>
+
+	* Switch to a non-modal advanced filtering window.
+
+2010-04-23  Spencer Shimko <sshimko@tresys.com>
+
+	* Rebase module loading code on upstream userspace.
+
+	* Automatically detect base module instead of asking
+	  user to identify the base.
+
+	* Support for bzipped policy packages (.pp) found in 
+	  Fedora 12 and later.
+
+2010-04-20  Chris PeBenito <cpebenito@tresys.com>
+
+	* Fix seinfo to correctly handle cases where there are
+	  no nodecon statements in the policy.
+
+2010-04-20  Spencer Shimko <sshimko@tresys.com>
+
+	* Fixes error conditions that prevent apol from exiting.  If 
+	  window/tab was already destroyed on exit
+	  then apol threw an error and refused to exit. 
+
+2010-04-15  Spencer Shimko <sshimko@tresys.com>
+
+	* Add support for displaying constraints to seinfo.
+	* Add constraint CUnit tests.
+
+2010-03-12  John Oliver <joliver@tresys.com>
+
+	* Ensure architecture independent parts of python SWIG wrapper
+	  get installed into the same directory as the architecture
+	  dependent parts.
+
+2010-03-12  Chris PeBenito <cpebenito@tresys.com>
+
+	* Fix seaudit/libseaudit headers.
+
+2010-03-02  John Oliver <joliver@tresys.com>
+
+	* Fix error message when Tk can not be loaded by apol.  Make it
+	  clear that it is Tk, not an SETools library that connot be loaded.
+
+2010-03-01  John Oliver <joliver@tresys.com>
+
+	* Fix error in Apol which would disable new and updated search
+	  buttons in rule search.
+
+2009-12-09  John Oliver <joliver@tresys.com>
+
+	* Fix seaudit-report to correctly handle -c and --config
+	  options.
+
 2009-07-22  Chris PeBenito <cpebenito@tresys.com>
 
 	* SETools 3.3.6.

@@ -2876,3 +2876,4 @@ typedef struct qpol_syn_terule {} qpol_syn_terule_t;
 		return (qpol_syn_terule_t*)x;
 	};
 %}
+// vim:ft=c noexpandtab

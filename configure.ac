@@ -1,4 +1,4 @@
-AC_INIT(setools, 3.3.6, [Tresys Technology <setools@tresys.com>], [setools])
+AC_INIT(setools, 3.3.8, [Tresys Technology <setools@tresys.com>], [setools])
 AC_PREREQ([2.59])
 AC_CONFIG_SRCDIR(libqpol/src/policy.c)
 AC_CONFIG_HEADER(config.h)
@@ -8,19 +8,19 @@ AM_INIT_AUTOMAKE([-Wno-portability])
 dnl *** update these variables as versions change; also update AC_INIT ***
 
 libqpol_soversion=1
-libqpol_version=1.5
+libqpol_version=1.7
 
 libapol_soversion=4
-libapol_version=4.2
+libapol_version=4.4
 
 libpoldiff_soversion=1
-libpoldiff_version=1.3.1
+libpoldiff_version=1.3.3
 
 libsefs_soversion=4
-libsefs_version=4.0.2
+libsefs_version=4.0.4
 
 libseaudit_soversion=4
-libseaudit_version=4.3
+libseaudit_version=4.5
 
 setoolsdir='${prefix}/share/setools-3.3'
 javadir='${prefix}/share/java'
@@ -194,7 +194,7 @@ AC_ARG_ENABLE(swig-java,
               enable_jswig="$enableval")
 if test "x${enable_jswig}" = xyes; then
    if test ${do_swigify} = no; then
-      AC_PROG_SWIG(1.3.28)
+      AC_PROG_SWIG(2.0.0)
    fi
    AC_JAVA_OPTIONS
    if test "x$JAVAPREFIX" = x; then
@@ -216,21 +216,23 @@ if test "x${enable_jswig}" = xyes; then
    do_swigify_java=yes
    do_swigify=yes
 fi
+
+AM_PATH_PYTHON(2.7)
+
 AC_ARG_ENABLE(swig-python,
               AC_HELP_STRING([--enable-swig-python],
                              [build SWIG interfaces for Python]),
               enable_pyswig="$enableval")
 if test "x${enable_pyswig}" = xyes; then
    if test ${do_swigify} = no; then
-      AC_PROG_SWIG(1.3.28)
+      AC_PROG_SWIG(2.0.0)
    fi
-   AM_PATH_PYTHON(2.3)
    SWIG_PYTHON
    do_swigify_python=yes
    do_swigify=yes
 fi
 if test ${do_swigify} = "yes"; then
-   AC_PROG_SWIG(1.3.28)
+   AC_PROG_SWIG(2.0.0)
 fi
 build_apol=yes
 AC_ARG_ENABLE(swig-tcl,
@@ -239,7 +241,7 @@ AC_ARG_ENABLE(swig-tcl,
               enable_tclswig="$enableval", enable_tclswig="yes")
 if test "x${enable_tclswig}" = xyes; then
    if test ${do_swigify} = no; then
-      AC_PROG_SWIG(1.3.28)
+      AC_PROG_SWIG(2.0.0)
    fi
    TEA_INIT(3.5)
    TEA_PATH_TCLCONFIG
@@ -497,9 +499,25 @@ sepol_save_CPPFLAGS="${CPPFLAGS}"
 CFLAGS="${CFLAGS} ${SELINUX_CFLAGS} ${SELINUX_LIB_FLAG}"
 CPPFLAGS="${CPPFLAGS} ${SELINUX_CFLAGS}"
 
-dnl check for user and role mapping, added in libsepol version 2.0.29
-AC_MSG_CHECKING([for user and role mappings])
+dnl check for role attribute, added in libsepol 2.0.46
+AC_MSG_CHECKING([for libsepol role_set_expand() role attribute support])
 AC_COMPILE_IFELSE(
+                  [AC_LANG_SOURCE([
+#include <sepol/policydb/expand.h>
+int main () {
+  return role_set_expand(NULL, NULL, NULL, NULL, NULL);
+}])],
+                  sepol_role_attrs="yes",
+                  sepol_role_attrs="no")
+AC_MSG_RESULT([${sepol_role_attrs}])
+
+if test ${sepol_role_attrs} == "yes"; then
+	sepol_new_user_role_mapping="yes"
+	sepol_role_set_expand_base="yes"
+else
+    dnl check for user and role mapping, added in libsepol version 2.0.29
+    AC_MSG_CHECKING([for libsepol role_set_expand() user and role mappings])
+    AC_COMPILE_IFELSE(
                   [AC_LANG_SOURCE([
 #include <sepol/policydb/expand.h>
 int main () {
@@ -507,7 +525,28 @@ int main () {
 }])],
                   sepol_new_user_role_mapping="yes",
                   sepol_new_user_role_mapping="no")
-AC_MSG_RESULT([${sepol_new_user_role_mapping}])
+    AC_MSG_RESULT([${sepol_new_user_role_mapping}])
+
+    if test ${sepol_new_user_role_mapping} == "no"; then
+        dnl if this is not the original role_set_expand(), this libsepol is too new
+        AC_MSG_CHECKING([for libsepol role_set_expand() original version])
+        AC_COMPILE_IFELSE(
+                  [AC_LANG_SOURCE([
+#include <sepol/policydb/expand.h>
+int main () {
+  return role_set_expand(NULL, NULL, NULL);
+}])],
+                  sepol_role_set_expand_base="yes",
+                  sepol_role_set_expand_base="no")
+        AC_MSG_RESULT([${sepol_role_set_expand_base}])
+
+        if test ${sepol_role_set_expand_base} == "no"; then
+           AC_MSG_ERROR([this version of libsepol is incompatible with SETools])
+        fi
+    else
+        sepol_role_set_expand_base="yes"
+    fi
+fi
 
 dnl check for permissive types, added in libsepol version 2.0.26
 AC_CHECK_DECL([TYPE_FLAGS_PERMISSIVE],
@@ -703,11 +742,26 @@ if test "x${build_gui}" = xyes; then
 fi
 
 have_cunit="no"
-AC_CHECK_LIB(cunit, CU_initialize_registry, have_cunit="yes", AC_MSG_WARN([CUnit not found; `make check' will fail.]))
-if test ${have_cunit} = "yes"; then
-  CUNIT_LIB_FLAG="-lcunit"
-  AC_SUBST(CUNIT_LIB_FLAG)
-fi
+AC_CHECK_LIB(cunit, 
+    CU_initialize_registry, 
+    [have_cunit="yes"
+     CUNIT_LIB_FLAG="-lcunit"],
+    [AC_CHECK_LIB(cunit,
+         CU_curses_run_tests,
+         [have_cunit="yes"
+          CUNIT_LIB_FLAG="-lcunit -lncurses"],
+         AC_MSG_WARN([Compatible CUnit not found; "make check" will fail.]),
+         -lncurses)
+    ]
+)
+AC_SUBST([CUNIT_LIB_FLAG])
+
+AC_CHECK_LIB(bz2,
+	BZ2_bzReadOpen, ,
+	AC_MSG_ERROR([could not find libbz2 - make sure bzip2-libs is installed]),
+	-lbz2
+)
+
 #AC_MSG_CHECKING([for FUSE])
 #pkg-config --exists fuse
 #if test $? -ne 0; then
@@ -804,6 +858,9 @@ fi
 if test ${sepol_new_user_role_mapping} == "yes"; then
    AC_DEFINE(HAVE_SEPOL_USER_ROLE_MAPPING, 1, [if users and roles are mapped during policy expansion])
 fi
+if test ${sepol_role_attrs} == "yes"; then
+   AC_DEFINE(HAVE_SEPOL_ROLE_ATTRS, 1, [if role attributes are supported])
+fi
 
 if test ${use_shared} == "yes"; then
    AC_DEFINE(LINK_SHARED, 1, [link programs using shared libraries])
@@ -873,6 +930,8 @@ AC_CONFIG_FILES([Makefile VERSION \
                  sediff/Makefile \
                  man/Makefile \
                  debian/Makefile \
+                 python/Makefile \
+                 python/setools/Makefile \
                  packages/Makefile packages/rpm/Makefile \
                  packages/libqpol.pc packages/libapol.pc packages/libpoldiff.pc packages/libseaudit.pc packages/libsefs.pc])
 
