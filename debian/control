@@ -1,183 +1,240 @@
 Source: setools
+VCS-Git: git://anonscm.debian.org/selinux/setools.git
+VCS-Browser: http://anonscm.debian.org/gitweb/?p=selinux/setools.git;a=summary
 Priority: optional
-Maintainer:  J. Tang <jtang@tresys.com>
-Build-Depends: cdbs, debhelper (>= 5), autotools-dev, pkg-config,
- g++ (>= 4.0), libstdc++-dev, autoconf (>= 2.59), libtool, flex, bison,
- libselinux1-dev (>= 1.30), libsepol1-dev (>= 2.0.29),
- libxml2-dev, libsqlite3-dev (>= 3.2),
- swig (>= 1.3.28), python-dev (>= 2.3), python-central, java-gcj-compat-dev,
- tcl8.4-dev (>= 8.4.9) | tcl-dev (>= 8.4.9),
- tk8.4-dev (>= 8.4.9) | tk-dev (>= 8.4.9),
- libglib2.0-dev, libgtk2.0-dev (>= 2.8), libglade2-dev
-Standards-Version: 3.7.2
-Section: utils
+Section: admin
+Maintainer: Debian SELinux maintainers <selinux-devel@lists.alioth.debian.org>
+Uploaders: Manoj Srivastava <srivasta@debian.org>
+Standards-Version: 3.9.5
+X-Python-Version: >= 2.7
+Build-Depends: bison,
+               debhelper (>= 9),
+               default-jdk,
+               dh-autoreconf,
+               flex (>= 2.5.33-6),
+               libbz2-dev,
+               libcap-dev,
+               libcunit1-dev,
+               libglade2-dev,
+               libglib2.0-dev,
+               libgtk2.0-dev (>= 2.8),
+               libselinux1-dev (>= 2.1.13),
+               libsepol1-dev (>= 2.1.9),
+               libsqlite3-dev (>= 3.2),
+               libtool,
+               libxml2-dev,
+               pkg-config,
+               python-all-dev (>= 2.7),
+               swig (>= 1.3.28),
+               tcl-dev (>= 8.4.9),
+               tk-dev (>= 8.4.9)
+Homepage: http://oss.tresys.com/projects/setools
 
 Package: setools
-Section: utils
-Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},
- libsetools-tcl (= ${Source-Version}),
- tk8.4 (>= 8.4.9) | wish, bwidget (>= 1.8), menu
-Recommends: setools-console
-Suggests: logwatch
-Provides: setools-gui
-Description: Collection of graphical tools for SELinux policy analysis
- SETools is a collection of graphical tools, command-line tools, and
- libraries designed to facilitate SELinux policy analysis.
+Architecture: linux-any
+Depends: ${misc:Depends},
+         ${shlibs:Depends}
+Suggests: setools-gui
+Description: tools for Security Enhanced Linux policy analysis
+ Security-enhanced Linux is a patch of the Linux kernel and a number
+ of utilities with enhanced security functionality designed to add
+ mandatory access controls to Linux. These are Tools for analysing
+ security policy on SELinux systems.
  .
- This package includes the following graphical tools:
- .
-  * apol          policy analysis tool
-  * seaudit       audit log analysis tool
-  * sediffx       semantic policy difference tool
+ This package contains the CLI tools.
 
-Package: libsetools
+Package: setools-gui
+Architecture: linux-any
+Depends: bwidget (>= 1.8),
+         libsetools-tcl (= ${binary:Version}),
+         tcl (>= 8.4.9) | tclsh,
+         tk (>= 8.4.9) | wish,
+         ${misc:Depends},
+         ${shlibs:Depends}
+Breaks: setools (<< 3.3.8-2~)
+Replaces: setools (<< 3.3.8-2~)
+Description: GUI tools for Security Enhanced Linux policy analysis
+ Security-enhanced Linux is a patch of the Linux kernel and a number
+ of utilities with enhanced security functionality designed to add
+ mandatory access controls to Linux. These are Tools for analysing
+ security policy on SELinux systems.
+ .
+ This package contains the GUI tools.
+
+Package: libsefs4
+Architecture: linux-any
 Section: libs
-Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
-Suggests: doxygen
-Description: SELinux policy analysis libraries
- SETools is a collection of graphical tools, command-line tools, and
- libraries designed to facilitate SELinux policy analysis.
- .
- This package includes the following run-time libraries:
- .
-  * libapol       policy analysis library
-  * libpoldiff    semantic policy difference library
-  * libqpol       library that abstracts policy internals
-  * libseaudit    parse and filter SELinux audit messages in log files
-  * libsefs       SELinux file contexts library
-
-Package: libsetools-python
-Section: libs
-Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, python (>= 2.3)
-XS-Python-Version: current
-XB-Python-Version: current
-Description: SETools Python bindings
- SETools is a collection of graphical tools, command-line tools, and
- libraries designed to facilitate SELinux policy analysis.
- .
- This package includes Python bindings for the following libraries:
- .
-  * libapol       policy analysis library
-  * libpoldiff    semantic policy difference library
-  * libqpol       library that abstracts policy internals
-  * libseaudit    parse and filter SELinux audit messages in log files
-  * libsefs       SELinux file contexts library
-
-Package: libsetools-java
-Section: libs
-Architecture: any
-Depends: java-gcj-compat | java2-runtime, libsetools-jni (= ${binary:Version})
-Description: SETools Java bindings (architecture-independent)
- SETools is a collection of graphical tools, command-line tools, and
- libraries designed to facilitate SELinux policy analysis.
- .
- This package includes Java bindings for the following libraries:
- .
-  * libapol       policy analysis library
-  * libpoldiff    semantic policy difference library
-  * libqpol       library that abstracts policy internals
-  * libseaudit    parse and filter SELinux audit messages in log files
-  * libsefs       SELinux file contexts library
- 
-Package: libsetools-jni
-Section: libs
-Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: SETools Java bindings (architecture-dependent)
- This package includes the architecture-dependent library files needed
- for libsetools-java.
- 
-Package: libsetools-tcl
-Section: libs
-Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: SETools Tcl bindings
- SETools is a collection of graphical tools, command-line tools, and
- libraries designed to facilitate SELinux policy analysis.
- .
- This package includes Tcl bindings for the following libraries:
- .
-  * libapol       policy analysis library
-  * libpoldiff    semantic policy difference library
-  * libqpol       library that abstracts policy internals
-  * libseaudit    parse and filter SELinux audit messages in log files
-  * libsefs       SELinux file contexts library
-
-Package: libsetools-dev
-Section: libdevel
-Architecture: any
-Depends: libsetools (= ${Source-Version})
-Description: SETools development files
- SETools is a collection of graphical tools, command-line tools, and
- libraries designed to facilitate SELinux policy analysis.
- .
- This package includes header files and archives for the following
- libraries:
- .
-  * libapol       policy analysis library
-  * libpoldiff    semantic policy difference library
-  * libqpol       library that abstracts policy internals
-  * libseaudit    parse and filter SELinux audit messages in log files
-  * libsefs       SELinux file contexts library
-
-Package: setools-console
-Section: utils
-Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
-Recommends: setools
-Description: Collection of console tools for SELinux policy analysis
- SETools is a collection of graphical tools, command-line tools, and
- libraries designed to facilitate SELinux policy analysis.
- .
- This package includes the following console tools:
- .
-  * seaudit-report  audit log analysis tool
-  * sechecker       SELinux policy checking tool
-  * secmds          command line tools: seinfo, sesearch, findcon,
-                      replcon, and indexcon
-  * sediff          semantic policy difference tool
-
-Package: libapol1
-Architecture: all
-Depends: libsetools
-Description: transitional package to smooth renaming to libsetools
- This package installs libsetools, and can be safely removed
- afterwards.
-
-Package: libseaudit1
-Architecture: all
-Depends: libsetools
-Description: transitional package to smooth renaming to libsetools
- This package installs libsetools, and can be safely removed
- afterwards.
-
-Package: libsefs1
-Architecture: all
-Depends: libsetools
-Description: transitional package to smooth renaming to libsetools
- This package installs libsetools, and can be safely removed
- afterwards.
-
-Package: libapol-dev
-Architecture: all
-Depends: libsetools-dev
-Description: transitional package to smooth renaming to libsetools-dev
- This package installs libsetools-dev, and can be safely removed
- afterwards.
-
-Package: libseaudit-dev
-Architecture: all
-Depends: libsetools-dev
-Description: transitional package to smooth renaming to libsetools-dev
- This package installs libsetools-dev, and can be safely removed
- afterwards.
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Pre-Depends: ${misc:Pre-Depends}
+Multi-Arch: same
+Description: Security Enhanced Linux file context management
+ Security-enhanced Linux is a patch of the Linux kernel and a number
+ of utilities with enhanced security functionality designed to add
+ mandatory access controls to Linux. This is a shared library for
+ indexing and analyzing a snapshot of security contexts for SELinux
+ file-system entities. Used primarily by setools, but may be of use
+ for other packages.
 
 Package: libsefs-dev
+Section: libdevel
+Architecture: linux-any
+Depends: libapol-dev,
+         libsefs4 (= ${binary:Version}),
+         libsqlite3-dev (>= 3.2),
+         ${misc:Depends},
+         ${shlibs:Depends}
+Description: Security Enhanced Linux file context management development
+ Security-enhanced Linux is a patch of the Linux kernel and a number
+ of utilities with enhanced security functionality designed to add
+ mandatory access controls to Linux.  This package contains the
+ headers and archives used for linking to the library routines used
+ for indexing and analyzing a snapshot of security contexts for
+ SELinux file-system entities.
+
+Package: libseaudit4
+Architecture: linux-any
+Section: libs
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Pre-Depends: ${misc:Pre-Depends}
+Multi-Arch: same
+Description: Security Enhanced Linux audit message parsing library
+ Security-enhanced Linux is a patch of the Linux kernel and a number
+ of utilities with enhanced security functionality designed to add
+ mandatory access controls to Linux.  This is the shared library used
+ for parsing and filter SELinux audit messages in log files. Primarily
+ used by Tresys tools, but may be of use for other packages.
+
+Package: libseaudit-dev
+Section: libdevel
+Architecture: linux-any
+Depends: libapol-dev,
+         libseaudit4 (= ${binary:Version}),
+         ${misc:Depends},
+         ${shlibs:Depends}
+Description: Security Enhanced Linux audit message parser development
+ Security-enhanced Linux is a patch of the Linux kernel and a number
+ of utilities with enhanced security functionality designed to add
+ mandatory access controls to Linux.  This package contains the
+ headers and archives used for linking to the library routines used to
+ parse and filter SELinux audit log messages.
+
+Package: libapol4
+Architecture: linux-any
+Section: libs
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Pre-Depends: ${misc:Pre-Depends}
+Multi-Arch: same
+Description: Security Enhanced Linux policy analysis library
+ Security-enhanced Linux is a patch of the Linux kernel and a number
+ of utilities with enhanced security functionality designed to add
+ mandatory access controls to Linux.  This is the setools policy
+ analysis library.
+
+Package: libapol-dev
+Section: libdevel
+Architecture: linux-any
+Depends: libapol4 (= ${binary:Version}),
+         libqpol-dev,
+         ${misc:Depends},
+         ${shlibs:Depends}
+Description: Security Enhanced Linux policy analysis development
+ Security-enhanced Linux is a patch of the Linux kernel and a number
+ of utilities with enhanced security functionality designed to add
+ mandatory access controls to Linux.  This package contains the
+ headers and archives used for linking to the library routines used in
+ the setools policy analysis library.
+
+Package: libpoldiff1
+Architecture: linux-any
+Section: libs
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Pre-Depends: ${misc:Pre-Depends}
+Multi-Arch: same
+Description: Security Enhanced Linux semantic policy differences library
+ Security-enhanced Linux is a patch of the Linux kernel and a number
+ of utilities with enhanced security functionality designed to add
+ mandatory access controls to Linux.  libpoldiff is a library to be
+ used in conjunction with libapol to find "semantic" differences
+ between policies. libpoldiff operates by breaking a policy into
+ various 'policy items'.
+
+Package: libpoldiff-dev
+Section: libdevel
+Architecture: linux-any
+Depends: libapol-dev,
+         libpoldiff1 (= ${binary:Version}),
+         libqpol-dev,
+         ${misc:Depends},
+         ${shlibs:Depends}
+Description: Security Enhanced Linux semantic policy differences development
+ Security-enhanced Linux is a patch of the Linux kernel and a number
+ of utilities with enhanced security functionality designed to add
+ mandatory access controls to Linux.  This package contains the
+ headers and archives used for linking to the library routines used in
+ the semantic policy differences library.
+
+Package: libqpol1
+Architecture: linux-any
+Section: libs
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Pre-Depends: ${misc:Pre-Depends}
+Multi-Arch: same
+Description: Security Enhanced Linux policy abstraction library
+ Security-enhanced Linux is a patch of the Linux kernel and a number
+ of utilities with enhanced security functionality designed to add
+ mandatory access controls to Linux.  This package contains a library
+ that abstracts security policy internals, and is used by other
+ setools and library packages.
+
+Package: libqpol-dev
+Section: libdevel
+Architecture: linux-any
+Depends: libqpol1 (= ${binary:Version}), ${misc:Depends}, ${shlibs:Depends}
+Description: Security Enhanced Linux policy abstraction development
+ Security-enhanced Linux is a patch of the Linux kernel and a number
+ of utilities with enhanced security functionality designed to add
+ mandatory access controls to Linux.  This package contains the
+ headers and archives used for linking to the library routines used in
+ the policy abstraction library.
+
+Package: libsetools-jni
+Section: java
+Architecture: linux-any
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: SETools Java bindings (architecture-dependent)
+ Security-enhanced Linux is a patch of the Linux kernel and a number
+ of utilities with enhanced security functionality designed to add
+ mandatory access controls to Linux.  This package includes the
+ architecture-dependent library files needed for libsetools-java.
+
+Package: libsetools-java
+Section: java
 Architecture: all
-Depends: libsetools-dev
-Description: transitional package to smooth renaming to libsetools-dev
- This package installs libsetools-dev, and can be safely removed
- afterwards.
+Depends: libsetools-jni (<< ${source:Version}.1~),
+         libsetools-jni (>= ${source:Version}),
+         ${misc:Depends}
+Description: SETools Java bindings (architecture-independent)
+ SETools is a collection  tools for analysing security policyon SELinux
+ systems. This package includes Java bindings for the following
+ setools libraries: libapol, libpoldiff, libqpol, libseaudit, and
+ libsefs.
+
+Package: libsetools-tcl
+Section: libs
+Architecture: linux-any
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: SETools Tcl bindings
+ SETools is a collection  tools for analysing security policyon SELinux
+ systems. This package includes Tcl bindings for the following setools
+ libraries: libapol, libpoldiff, libqpol, libseaudit, and libsefs.
+
+Package: python-setools
+Section: python
+Architecture: linux-any
+Depends: ${misc:Depends}, ${python:Depends}, ${shlibs:Depends}
+Provides: ${python:Provides}
+Description: SETools Python bindings
+ SETools is a collection  tools for analysing security policyon SELinux
+ systems. This package includes Python bindings for the following
+ setools libraries: libapol, libpoldiff, libqpol, libseaudit, and
+ libsefs.

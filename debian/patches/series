@@ -1,0 +1,16 @@
+legacy.patch
+add_missing_prototypes.patch
+preserve_abi.patch
+setools_ac_pkg_swig_m4_fixed.diff
+fix_ftbfs_format_security.patch
+no_link_python.patch
+no_soname_tcl.patch
+no_soname_java.patch
+as_needed.patch
+configure_multiarch.patch
+use_fPIC_instead_fpic.patch
+setools-swig-2.0.7.patch
+python_setools_path.patch
+fix-javacflags.patch
+fix-sediffx-crash.patch
+fix-lsetfilecon_raw-prototype.patch

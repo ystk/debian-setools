@@ -1,0 +1,4 @@
+usr/include/poldiff
+usr/lib/*/libpoldiff.a
+usr/lib/*/libpoldiff.so
+usr/lib/*/pkgconfig/libpoldiff.pc

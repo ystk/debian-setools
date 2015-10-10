@@ -1,1 +1,1 @@
-/usr/lib/jni/*
+usr/lib/*/libj*.so* usr/lib/jni/

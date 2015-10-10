@@ -1,0 +1,62 @@
+Description: legacy patch comming from previous versions
+Author: Manoj Srivastava <srivasta@debian.org>
+
+--- a/configure.ac
++++ b/configure.ac
+@@ -22,7 +22,7 @@ libsefs_version=4.0.4
+ libseaudit_soversion=4
+ libseaudit_version=4.5
+ 
+-setoolsdir='${prefix}/share/setools-3.3'
++setoolsdir='${prefix}/share/setools/3.3'
+ javadir='${prefix}/share/java'
+ 
+ version_min_sepol_major=1
+@@ -63,7 +63,7 @@ if test ${ac_cv_prog_cc_c99} = "no"; the
+ fi
+ AC_PROG_CXX
+ AC_LANG([C])
+-AC_PROG_LIBTOOL
++AC_PROG_RANLIB
+ AC_PROG_LN_S
+ AC_PROG_LEX
+ AC_PROG_YACC
+@@ -370,7 +370,7 @@ fi
+ if test "x${enable_debug}" = xyes; then
+    TCL_AUTOPATH+=' $(top_builddir)/libqpol/swig/tcl $(top_builddir)/libapol/swig/tcl $(top_builddir)/libsefs/swig/tcl $(top_builddir)/libpolsearch/swig/tcl $(top_builddir)/apol'
+ else
+-   TCL_AUTOPATH+=' $(libdir)/setools'
++   TCL_AUTOPATH+=' $(libdir)/setools $(libdir)/setools/apol $(libdir)/setools/apol_tcl $(libdir)/setools/sefs $(libdir)/setools/qpol $(libdir)/setools/poldiff $(libdir)/setools/seaudit '
+ fi
+ AC_SUBST(TCL_AUTOPATH)
+ 
+@@ -929,7 +929,6 @@ AC_CONFIG_FILES([Makefile VERSION \
+                  seaudit/Makefile \
+                  sediff/Makefile \
+                  man/Makefile \
+-                 debian/Makefile \
+                  python/Makefile \
+                  python/setools/Makefile \
+                  packages/Makefile packages/rpm/Makefile \
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -10,7 +10,7 @@ if BUILD_GUI
+ endif
+ # sediffx is also built conditionally, from sediffx/Makefile.am
+ 
+-SUBDIRS = libqpol libapol libsefs libpoldiff libseaudit secmds sechecker sediff man packages debian $(MAYBE_APOL) $(MAYBE_GUI) python
++SUBDIRS = libqpol libapol libsefs libpoldiff libseaudit secmds sechecker sediff man packages $(MAYBE_APOL) $(MAYBE_GUI) python
+ 
+ #old indent opts
+ #INDENT_OPTS = -npro -nbad -bap -sob -ss -l132 -di1 -nbc -br -nbbb -c40 -cd40 -ncdb -ce -cli0 -cp40 -ncs -d0 -nfc1 -nfca -i8 -ts8 -ci8 -lp -ip0 -npcs -npsl -sc
+--- a/seaudit/seaudit-report-service.in
++++ b/seaudit/seaudit-report-service.in
+@@ -2,7 +2,7 @@
+ # shell script to run seaudit-report on STDIN
+ #
+ 
+-SEAUDITREPORT=@bindir@
++SEAUDITREPORT=@bindir@/seaudit-report
+ OPTS="--stdin --malformed"
+ 
+ echo "Date Range: $LOGWATCH_DATE_RANGE"

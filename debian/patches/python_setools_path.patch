@@ -1,0 +1,14 @@
+Description: Fix installation path of the modules
+From: Laurent Bigonville <bigon@debian.org>
+
+--- a/python/setools/Makefile.am
++++ b/python/setools/Makefile.am
+@@ -25,7 +25,7 @@ python-build: sesearch.c seinfo.c
+ 	LIBS="$(QPOL_LIB_FLAG) $(APOL_LIB_FLAG)" INCLUDES="$(QPOL_CFLAGS) $(APOL_CFLAGS)" $(PYTHON) setup.py build
+ 
+ install-exec-hook:
+-	$(PYTHON) setup.py install `test -n "$(DESTDIR)" && echo --root $(DESTDIR)`
++	$(PYTHON) setup.py install --prefix='/usr' --install-layout=deb `test -n "$(DESTDIR)" && echo --root $(DESTDIR)`
+ 
+ uninstall-hook: 
+ 	$(PYTHON) setup.py uninstall `test -n "$(DESTDIR)" && echo --root $(DESTDIR)`

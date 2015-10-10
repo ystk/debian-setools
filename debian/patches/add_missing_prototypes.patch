@@ -1,0 +1,42 @@
+Description: Missing function prototypes
+ Missing function prototypes are likely to cause setools to segfault on
+ architectures where the size of a pointer is greater than the size
+ of an integer, such as ia64 and amd64. This patch adds the
+ prototypes, and the doxygen comments to the header file.
+Author: dann frazier <dannf@debian.org>
+Date: Mon, 17 Aug 2009 11:11:16 -0500
+Bug-Debian: http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=541862
+
+--- a/seaudit/toplevel.h
++++ b/seaudit/toplevel.h
+@@ -155,6 +155,30 @@ apol_vector_t *toplevel_get_log_roles(to
+ apol_vector_t *toplevel_get_log_types(toplevel_t * top);
+ 
+ /**
++ * Return a vector of strings corresponding to all mls levels
++ * found within currently opened log files.  The vector will be sorted
++ * alphabetically.
++ *
++ * @param top Toplevel containing seaudit log object.
++ *
++ * @return Vector of sorted types, or NULL if no log is loaded.  The
++ * caller must call apol_vector_destroy() upon the return value.
++ */
++apol_vector_t *toplevel_get_log_mls_lvl(toplevel_t * top);
++
++/**
++ * Return a vector of strings corresponding to all mls clearance
++ * found within currently opened log files.  The vector will be sorted
++ * alphabetically.
++ *
++ * @param top Toplevel containing seaudit log object.
++ *
++ * @return Vector of sorted types, or NULL if no log is loaded.  The
++ * caller must call apol_vector_destroy() upon the return value.
++ */
++apol_vector_t *toplevel_get_log_mls_clr(toplevel_t * top);
++
++/**
+  * Return a vector of strings corresponding to all mls
+  * levels found within the current log file.  
+  * The vector will be sorted alphabetically.

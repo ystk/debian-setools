@@ -1,0 +1,1053 @@
+Description: Fix FTBFS with swig 2.0.7
+Origin: https://build.opensuse.org/package/files?package=setools&project=security%3ASELinux
+Bug-Debian: http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=672040
+
+--- a/libapol/swig/apol.i
++++ b/libapol/swig/apol.i
+@@ -232,7 +232,7 @@ uint8_t apol_str_to_protocol(const char
+ %newobject wrap_apol_str_to_internal_ip(char*);
+ %rename(apol_str_to_internal_ip) wrap_apol_str_to_internal_ip;
+ %inline %{
+-	typedef struct apol_ip {
++	typedef struct {
+ 		uint32_t ip[4];
+ 		int proto;
+ 	} apol_ip_t;
+@@ -298,10 +298,10 @@ char *apol_file_find_path(const char *fi
+ %include "apol/render.h"
+ 
+ /* derived vector type here */
+-%inline %{
++%{
+ 	typedef struct apol_string_vector apol_string_vector_t;
+ %}
+-typedef struct apol_vector {} apol_vector_t;
++typedef struct {} apol_vector_t;
+ %extend apol_vector_t {
+ 	apol_vector_t() {
+ 		return apol_vector_create(NULL);
+@@ -377,7 +377,7 @@ typedef struct apol_vector {} apol_vecto
+ 		return apol_vector_compare(a, b, NULL, NULL, &idx);
+ 	}
+ %}
+-typedef struct apol_string_vector {} apol_string_vector_t;
++typedef struct {} apol_string_vector_t;
+ %extend apol_string_vector_t {
+ 	apol_string_vector_t() {
+ 		return (apol_string_vector_t*)apol_vector_create(free);
+@@ -460,7 +460,7 @@ typedef struct apol_string_vector {} apo
+ 	APOL_POLICY_PATH_TYPE_MONOLITHIC = 0,
+ 	APOL_POLICY_PATH_TYPE_MODULAR
+ } apol_policy_path_type_e;
+-typedef struct apol_policy_path {} apol_policy_path_t;
++typedef struct {} apol_policy_path_t;
+ %extend apol_policy_path_t {
+ 	apol_policy_path_t(apol_policy_path_type_e type, char * primary, apol_string_vector_t *modules = NULL) {
+ 		apol_policy_path_t *p;
+@@ -540,7 +540,7 @@ int apol_policy_path_compare(const apol_
+ int apol_file_is_policy_path_list(const char *filename);
+ 
+ /* apol policy */
+-typedef struct apol_policy {} apol_policy_t;
++typedef struct {} apol_policy_t;
+ #define APOL_PERMMAP_MAX_WEIGHT 10
+ #define APOL_PERMMAP_MIN_WEIGHT 1
+ #define APOL_PERMMAP_UNMAPPED	0x00
+@@ -650,7 +650,7 @@ typedef struct apol_policy {} apol_polic
+ };
+ 
+ /* apol type query */
+-typedef struct apol_type_query {} apol_type_query_t;
++typedef struct {} apol_type_query_t;
+ %extend apol_type_query_t {
+ 	apol_type_query_t() {
+ 		apol_type_query_t *tq;
+@@ -692,7 +692,7 @@ typedef struct apol_type_query {} apol_t
+ };
+ 
+ /* apol attribute query */
+-typedef struct apol_attr_query {} apol_attr_query_t;
++typedef struct {} apol_attr_query_t;
+ %extend apol_attr_query_t {
+ 	apol_attr_query_t() {
+ 		apol_attr_query_t *aq;
+@@ -734,7 +734,7 @@ typedef struct apol_attr_query {} apol_a
+ };
+ 
+ /* apol role query */
+-typedef struct apol_role_query {} apol_role_query_t;
++typedef struct {} apol_role_query_t;
+ %extend apol_role_query_t {
+ 	apol_role_query_t() {
+ 		apol_role_query_t *rq;
+@@ -786,7 +786,7 @@ typedef struct apol_role_query {} apol_r
+ int apol_role_has_type(apol_policy_t * p, qpol_role_t * r, qpol_type_t * t);
+ 
+ /* apol class query */
+-typedef struct apol_class_query {} apol_class_query_t;
++typedef struct {} apol_class_query_t;
+ %extend apol_class_query_t {
+ 	apol_class_query_t() {
+ 		apol_class_query_t *cq;
+@@ -837,7 +837,7 @@ typedef struct apol_class_query {} apol_
+ };
+ 
+ /* apol common query */
+-typedef struct apol_common_query {} apol_common_query_t;
++typedef struct {} apol_common_query_t;
+ %extend apol_common_query_t {
+ 	apol_common_query_t() {
+ 		apol_common_query_t *cq;
+@@ -879,7 +879,7 @@ typedef struct apol_common_query {} apol
+ };
+ 
+ /* apol perm query */
+-typedef struct apol_perm_query {} apol_perm_query_t;
++typedef struct {} apol_perm_query_t;
+ %extend apol_perm_query_t {
+ 	apol_perm_query_t() {
+ 		apol_perm_query_t *pq;
+@@ -921,7 +921,7 @@ typedef struct apol_perm_query {} apol_p
+ };
+ 
+ /* apol bool query */
+-typedef struct apol_bool_query {} apol_bool_query_t;
++typedef struct {} apol_bool_query_t;
+ %extend apol_bool_query_t {
+ 	apol_bool_query_t() {
+ 		apol_bool_query_t *bq;
+@@ -963,7 +963,7 @@ typedef struct apol_bool_query {} apol_b
+ };
+ 
+ /* apol mls level */
+-typedef struct apol_mls_level {} apol_mls_level_t;
++typedef struct {} apol_mls_level_t;
+ %extend apol_mls_level_t {
+ 	apol_mls_level_t() {
+ 		apol_mls_level_t *aml;
+@@ -1122,11 +1122,11 @@ int apol_mls_cats_compare(apol_policy_t
+ %typemap(in) apol_mls_level_t *lvl {
+ 	void *x = NULL;
+ 	Py_IncRef($input);
+-	SWIG_ConvertPtr($input, &x,SWIGTYPE_p_apol_mls_level, 0 |  0 );
++	SWIG_ConvertPtr($input, &x,SWIGTYPE_p_apol_mls_level_t, 0 |  0 );
+ 	$1 = (apol_mls_level_t*)x;
+ }
+ #endif
+-typedef struct apol_mls_range {} apol_mls_range_t;
++typedef struct {} apol_mls_range_t;
+ %extend apol_mls_range_t {
+ 	apol_mls_range_t() {
+ 		apol_mls_range_t *amr;
+@@ -1276,7 +1276,7 @@ int apol_mls_range_contain_subrange(apol
+ %}
+ 
+ /* apol level query */
+-typedef struct apol_level_query {} apol_level_query_t;
++typedef struct {} apol_level_query_t;
+ %extend apol_level_query_t {
+ 	apol_level_query_t() {
+ 		apol_level_query_t * alq;
+@@ -1327,7 +1327,7 @@ typedef struct apol_level_query {} apol_
+ };
+ 
+ /* apol cat query */
+-typedef struct apol_cat_query {} apol_cat_query_t;
++typedef struct {} apol_cat_query_t;
+ %extend apol_cat_query_t {
+ 	apol_cat_query_t() {
+ 		apol_cat_query_t * acq;
+@@ -1373,11 +1373,11 @@ typedef struct apol_cat_query {} apol_ca
+ %typemap(in) apol_mls_range_t *rng {
+ 	void *x = NULL;
+ 	Py_IncRef($input);
+-	SWIG_ConvertPtr($input, &x,SWIGTYPE_p_apol_mls_range, 0 |  0 );
++	SWIG_ConvertPtr($input, &x,SWIGTYPE_p_apol_mls_range_t, 0 |  0 );
+ 	$1 = (apol_mls_range_t*)x;
+ }
+ #endif
+-typedef struct apol_user_query {} apol_user_query_t;
++typedef struct {} apol_user_query_t;
+ %extend apol_user_query_t {
+ 	apol_user_query_t() {
+ 		apol_user_query_t *auq;
+@@ -1446,7 +1446,7 @@ typedef struct apol_user_query {} apol_u
+ };
+ 
+ /* apol context */
+-typedef struct apol_context {} apol_context_t;
++typedef struct {} apol_context_t;
+ %extend apol_context_t {
+ 	apol_context_t() {
+ 		apol_context_t *ctx;
+@@ -1581,7 +1581,7 @@ typedef struct apol_context {} apol_cont
+ int apol_context_compare(apol_policy_t * p, apol_context_t * target, apol_context_t * search, unsigned int range_compare_type);
+ 
+ /* apol constraint query */
+-typedef struct apol_constraint_query {} apol_constraint_query_t;
++typedef struct {} apol_constraint_query_t;
+ %extend apol_constraint_query_t {
+ 	apol_constraint_query_t() {
+ 		apol_constraint_query_t *acq;
+@@ -1632,7 +1632,7 @@ typedef struct apol_constraint_query {}
+ };
+ 
+ /* apol validatetrans query */
+-typedef struct apol_validatetrans_query {} apol_validatetrans_query_t;
++typedef struct {} apol_validatetrans_query_t;
+ %extend apol_validatetrans_query_t {
+ 	apol_validatetrans_query_t() {
+ 		apol_validatetrans_query_t *avq;
+@@ -1678,11 +1678,11 @@ typedef struct apol_validatetrans_query
+ %typemap(in) apol_context_t *ctx {
+ 	void *x = NULL;
+ 	Py_IncRef($input);
+-	SWIG_ConvertPtr($input, &x,SWIGTYPE_p_apol_context, 0 |  0 );
++	SWIG_ConvertPtr($input, &x,SWIGTYPE_p_apol_context_t, 0 |  0 );
+ 	$1 = (apol_context_t*)x;
+ }
+ #endif
+-typedef struct apol_genfscon_query {} apol_genfscon_query_t;
++typedef struct {} apol_genfscon_query_t;
+ %extend apol_genfscon_query_t {
+ 	apol_genfscon_query_t() {
+ 		apol_genfscon_query_t *agq;
+@@ -1744,7 +1744,7 @@ typedef struct apol_genfscon_query {} ap
+ char *apol_genfscon_render(apol_policy_t * p, qpol_genfscon_t * genfscon);
+ 
+ /* apol fs_use query */
+-typedef struct apol_fs_use_query {} apol_fs_use_query_t;
++typedef struct {} apol_fs_use_query_t;
+ %extend apol_fs_use_query_t {
+ 	apol_fs_use_query_t() {
+ 		apol_fs_use_query_t *afq;
+@@ -1797,7 +1797,7 @@ typedef struct apol_fs_use_query {} apol
+ char *apol_fs_use_render(apol_policy_t * p, qpol_fs_use_t * fsuse);
+ 
+ /* apol initial sid query */
+-typedef struct apol_isid_query {} apol_isid_query_t;
++typedef struct {} apol_isid_query_t;
+ %extend apol_isid_query_t {
+ 	apol_isid_query_t() {
+ 		apol_isid_query_t *aiq;
+@@ -1839,7 +1839,7 @@ typedef struct apol_isid_query {} apol_i
+ };
+ 
+ /* apol portcon query */
+-typedef struct apol_portcon_query {} apol_portcon_query_t;
++typedef struct {} apol_portcon_query_t;
+ %extend apol_portcon_query_t {
+ 	apol_portcon_query_t() {
+ 		apol_portcon_query_t *apq;
+@@ -1883,7 +1883,7 @@ typedef struct apol_portcon_query {} apo
+ char *apol_portcon_render(apol_policy_t * p, qpol_portcon_t * portcon);
+ 
+ /* apol netifcon query */
+-typedef struct apol_netifcon_query {} apol_netifcon_query_t;
++typedef struct {} apol_netifcon_query_t;
+ %extend apol_netifcon_query_t {
+ 	apol_netifcon_query_t() {
+ 		apol_netifcon_query_t *anq;
+@@ -1930,7 +1930,7 @@ typedef struct apol_netifcon_query {} ap
+ char *apol_netifcon_render(apol_policy_t * p, qpol_netifcon_t * netifcon);
+ 
+ /* apol nodecon query */
+-typedef struct apol_nodecon_query {} apol_nodecon_query_t;
++typedef struct {} apol_nodecon_query_t;
+ %extend apol_nodecon_query_t {
+ 	apol_nodecon_query_t() {
+ 		apol_nodecon_query_t *anq;
+@@ -2010,7 +2010,7 @@ typedef struct apol_nodecon_query {} apo
+ char *apol_nodecon_render(apol_policy_t * p, qpol_nodecon_t * nodecon);
+ 
+ /* apol avrule query */
+-typedef struct apol_avrule_query {} apol_avrule_query_t;
++typedef struct {} apol_avrule_query_t;
+ %extend apol_avrule_query_t {
+ 	apol_avrule_query_t() {
+ 		apol_avrule_query_t *avq;
+@@ -2161,7 +2161,7 @@ char *apol_syn_avrule_render(apol_policy
+ %}
+ 
+ /* apol terule query */
+-typedef struct apol_terule_query {} apol_terule_query_t;
++typedef struct {} apol_terule_query_t;
+ %extend apol_terule_query_t {
+ 	apol_terule_query_t() {
+ 		apol_terule_query_t *atq;
+@@ -2285,7 +2285,7 @@ apol_vector_t *apol_terule_to_syn_terule
+ apol_vector_t *apol_terule_list_to_syn_terules(apol_policy_t * p, apol_vector_t * rules);
+ 
+ /* apol cond rule query */
+-typedef struct apol_cond_query {} apol_cond_query_t;
++typedef struct {} apol_cond_query_t;
+ %extend apol_cond_query_t {
+ 	apol_cond_query_t() {
+ 		apol_cond_query_t *acq;
+@@ -2329,7 +2329,7 @@ typedef struct apol_cond_query {} apol_c
+ char *apol_cond_expr_render(apol_policy_t * p, qpol_cond_t * cond);
+ 
+ /* apol role allow query */
+-typedef struct apol_role_allow_query {} apol_role_allow_query_t;
++typedef struct {} apol_role_allow_query_t;
+ %extend apol_role_allow_query_t {
+ 	apol_role_allow_query_t() {
+ 		apol_role_allow_query_t *arq;
+@@ -2385,7 +2385,7 @@ typedef struct apol_role_allow_query {}
+ char *apol_role_allow_render(apol_policy_t * policy, qpol_role_allow_t * rule);
+ 
+ /* apol role transition rule query */
+-typedef struct apol_role_trans_query {} apol_role_trans_query_t;
++typedef struct {} apol_role_trans_query_t;
+ %extend apol_role_trans_query_t {
+ 	apol_role_trans_query_t() {
+ 		apol_role_trans_query_t *arq;
+@@ -2450,7 +2450,7 @@ typedef struct apol_role_trans_query {}
+ char *apol_role_trans_render(apol_policy_t * policy, qpol_role_trans_t * rule);
+ 
+ /* apol range transition rule query */
+-typedef struct apol_range_trans_query {} apol_range_trans_query_t;
++typedef struct {} apol_range_trans_query_t;
+ %extend apol_range_trans_query_t {
+ 	apol_range_trans_query_t() {
+ 		apol_range_trans_query_t *arq;
+@@ -2529,7 +2529,7 @@ char *apol_range_trans_render(apol_polic
+ #define APOL_DOMAIN_TRANS_SEARCH_VALID		0x01
+ #define APOL_DOMAIN_TRANS_SEARCH_INVALID	0x02
+ #define APOL_DOMAIN_TRANS_SEARCH_BOTH		(APOL_DOMAIN_TRANS_SEARCH_VALID|APOL_DOMAIN_TRANS_SEARCH_INVALID)
+-typedef struct apol_domain_trans_analysis {} apol_domain_trans_analysis_t;
++typedef struct {} apol_domain_trans_analysis_t;
+ %extend apol_domain_trans_analysis_t {
+ 	apol_domain_trans_analysis_t() {
+ 		apol_domain_trans_analysis_t *dta;
+@@ -2620,7 +2620,7 @@ typedef struct apol_domain_trans_analysi
+ 		return v;
+ 	};
+ };
+-typedef struct apol_domain_trans_result {} apol_domain_trans_result_t;
++typedef struct {} apol_domain_trans_result_t;
+ %extend apol_domain_trans_result_t {
+ 	apol_domain_trans_result_t(apol_domain_trans_result_t *in) {
+ 		apol_domain_trans_result_t *dtr;
+@@ -2703,7 +2703,7 @@ int apol_domain_trans_table_verify_trans
+ 		*in = NULL;
+ 	}
+ %}
+-typedef struct apol_infoflow {} apol_infoflow_t;
++typedef struct {} apol_infoflow_t;
+ %extend apol_infoflow_t {
+ 	apol_infoflow_t() {
+ 		BEGIN_EXCEPTION
+@@ -2728,7 +2728,7 @@ typedef struct apol_infoflow {} apol_inf
+ 		return v;
+ 	};
+ };
+-typedef struct apol_infoflow_analysis {} apol_infoflow_analysis_t;
++typedef struct {} apol_infoflow_analysis_t;
+ %extend apol_infoflow_analysis_t {
+ 	apol_infoflow_analysis_t() {
+ 		apol_infoflow_analysis_t *aia;
+@@ -2821,7 +2821,7 @@ typedef struct apol_infoflow_analysis {}
+ 		return;
+ 	};
+ };
+-typedef struct apol_infoflow_graph {} apol_infoflow_graph_t;
++typedef struct {} apol_infoflow_graph_t;
+ %extend apol_infoflow_graph_t {
+ 	apol_infoflow_graph_t() {
+ 		BEGIN_EXCEPTION
+@@ -2865,7 +2865,7 @@ typedef struct apol_infoflow_graph {} ap
+ 		return retval;
+ 	};
+ };
+-typedef struct apol_infoflow_result {} apol_infoflow_result_t;
++typedef struct {} apol_infoflow_result_t;
+ %extend apol_infoflow_result_t {
+ 	apol_infoflow_result_t() {
+ 		BEGIN_EXCEPTION
+@@ -2899,7 +2899,7 @@ typedef struct apol_infoflow_result {} a
+ 		return (apol_infoflow_result_t*)x;
+ 	};
+ %}
+-typedef struct apol_infoflow_step {} apol_infoflow_step_t;
++typedef struct {} apol_infoflow_step_t;
+ %extend apol_infoflow_step_t {
+ 	apol_infoflow_step_t() {
+ 		BEGIN_EXCEPTION
+@@ -2936,7 +2936,7 @@ typedef struct apol_infoflow_step {} apo
+ #define APOL_RELABEL_DIR_FROM    0x02
+ #define APOL_RELABEL_DIR_BOTH    (APOL_RELABEL_DIR_TO|APOL_RELABEL_DIR_FROM)
+ #define APOL_RELABEL_DIR_SUBJECT 0x04
+-typedef struct apol_relabel_analysis {} apol_relabel_analysis_t;
++typedef struct {} apol_relabel_analysis_t;
+ %extend apol_relabel_analysis_t {
+ 	apol_relabel_analysis_t() {
+ 		apol_relabel_analysis_t *ara;
+@@ -3009,7 +3009,7 @@ typedef struct apol_relabel_analysis {}
+ 		return;
+ 	};
+ };
+-typedef struct apol_relabel_result {} apol_relabel_result_t;
++typedef struct {} apol_relabel_result_t;
+ %extend apol_relabel_result_t {
+ 	apol_relabel_result_t() {
+ 		BEGIN_EXCEPTION
+@@ -3040,7 +3040,7 @@ typedef struct apol_relabel_result {} ap
+ 		return (apol_relabel_result_t*)x;
+ 	};
+ %}
+-typedef struct apol_relabel_result_pair {} apol_relabel_result_pair_t;
++typedef struct {} apol_relabel_result_pair_t;
+ %extend apol_relabel_result_pair_t {
+ 	apol_relabel_result_pair_t() {
+ 		BEGIN_EXCEPTION
+@@ -3082,7 +3082,7 @@ typedef struct apol_relabel_result_pair
+ #define APOL_TYPES_RELATION_DIRECT_FLOW 0x1000
+ #define APOL_TYPES_RELATION_TRANS_FLOW_AB 0x4000
+ #define APOL_TYPES_RELATION_TRANS_FLOW_BA 0x8000
+-typedef struct apol_types_relation_analysis {} apol_types_relation_analysis_t;
++typedef struct {} apol_types_relation_analysis_t;
+ %extend apol_types_relation_analysis_t {
+ 	apol_types_relation_analysis_t() {
+ 		apol_types_relation_analysis_t *atr;
+@@ -3137,7 +3137,7 @@ typedef struct apol_types_relation_analy
+ 		return;
+ 	};
+ };
+-typedef struct apol_types_relation_result {} apol_types_relation_result_t;
++typedef struct {} apol_types_relation_result_t;
+ %extend apol_types_relation_result_t {
+ 	apol_types_relation_result_t() {
+ 		BEGIN_EXCEPTION
+@@ -3192,7 +3192,7 @@ typedef struct apol_types_relation_resul
+ 		return apol_types_relation_result_get_domainsBA(self);
+ 	};
+ };
+-typedef struct apol_types_relation_access {} apol_types_relation_access_t;
++typedef struct {} apol_types_relation_access_t;
+ %extend apol_types_relation_access_t {
+ 	apol_types_relation_access_t() {
+ 		BEGIN_EXCEPTION
+--- a/libpoldiff/swig/poldiff.i
++++ b/libpoldiff/swig/poldiff.i
+@@ -197,7 +197,7 @@ SWIGEXPORT int Tpoldiff_Init(Tcl_Interp
+ #define SWIG_exception(code, msg) {tcl_throw_error(msg); goto fail;}
+ #endif
+ 
+-%inline %{
++%{
+ 	typedef struct apol_string_vector apol_string_vector_t;
+ %}
+ 
+@@ -271,7 +271,7 @@ typedef enum poldiff_form
+ 		*x = NULL;
+ 	}
+ %}
+-typedef struct poldiff_stats {} poldiff_stats_t;
++typedef struct {} poldiff_stats_t;
+ %extend poldiff_stats_t {
+ 	poldiff_stats_t() {
+ 		poldiff_stats_t *s;
+@@ -336,17 +336,17 @@ unsigned long to_ulong(void *x);
+ %typemap(in) apol_policy_t *op {
+ 	void *x = NULL;
+ 	Py_IncRef($input);
+-	SWIG_ConvertPtr($input, &x,SWIGTYPE_p_apol_policy, 0 |  0 );
++	SWIG_ConvertPtr($input, &x,SWIGTYPE_p_apol_policy_t, 0 |  0 );
+ 	$1 = (apol_policy_t*)x;
+ }
+ %typemap(in) apol_policy_t *mp {
+ 	void *x = NULL;
+ 	Py_IncRef($input);
+-	SWIG_ConvertPtr($input, &x,SWIGTYPE_p_apol_policy, 0 |  0 );
++	SWIG_ConvertPtr($input, &x,SWIGTYPE_p_apol_policy_t, 0 |  0 );
+ 	$1 = (apol_policy_t*)x;
+ }
+ #endif
+-typedef struct poldiff {} poldiff_t;
++typedef struct {} poldiff_t;
+ %extend poldiff_t {
+ 	poldiff_t(apol_policy_t *op, apol_policy_t *mp) {
+ 		poldiff_t *p;
+@@ -476,7 +476,7 @@ typedef struct poldiff {} poldiff_t;
+ };
+ 
+ /* attribute diff */
+-typedef struct poldiff_attrib {} poldiff_attrib_t;
++typedef struct {} poldiff_attrib_t;
+ %extend poldiff_attrib_t {
+    poldiff_attrib_t () {
+       BEGIN_EXCEPTION
+@@ -521,7 +521,7 @@ typedef struct poldiff_attrib {} poldiff
+ %}
+ 
+ /* av rule diff */
+-typedef struct poldiff_avrule {} poldiff_avrule_t;
++typedef struct {} poldiff_avrule_t;
+ %extend poldiff_avrule_t {
+    poldiff_avrule_t() {
+       BEGIN_EXCEPTION
+@@ -629,7 +629,7 @@ typedef struct poldiff_avrule {} poldiff
+ %}
+ 
+ /* boolean diff */
+-typedef struct poldiff_bool {} poldiff_bool_t;
++typedef struct {} poldiff_bool_t;
+ %extend poldiff_bool_t {
+ 	poldiff_bool_t() {
+       BEGIN_EXCEPTION
+@@ -668,7 +668,7 @@ typedef struct poldiff_bool {} poldiff_b
+ %}
+ 
+ /* category diff */
+-typedef struct poldiff_cat {} poldiff_cat_t;
++typedef struct {} poldiff_cat_t;
+ %extend poldiff_cat_t {
+ 	poldiff_cat_t() {
+       BEGIN_EXCEPTION
+@@ -707,7 +707,7 @@ typedef struct poldiff_cat {} poldiff_ca
+ %}
+ 
+ /* class diff */
+-typedef struct poldiff_class {} poldiff_class_t;
++typedef struct {} poldiff_class_t;
+ %extend poldiff_class_t {
+ 	poldiff_class_t() {
+       BEGIN_EXCEPTION
+@@ -752,7 +752,7 @@ typedef struct poldiff_class {} poldiff_
+ %}
+ 
+ /* common diff */
+-typedef struct poldiff_common {} poldiff_common_t;
++typedef struct {} poldiff_common_t;
+ %extend poldiff_common_t {
+ 	poldiff_common_t() {
+       BEGIN_EXCEPTION
+@@ -797,7 +797,7 @@ typedef struct poldiff_common {} poldiff
+ %}
+ 
+ /* level diff */
+-typedef struct poldiff_level {} poldiff_level_t;
++typedef struct {} poldiff_level_t;
+ %extend poldiff_level_t {
+ 	poldiff_level_t() {
+       BEGIN_EXCEPTION
+@@ -857,7 +857,7 @@ typedef struct poldiff_level {} poldiff_
+ %}
+ 
+ /* range diff */
+-typedef struct poldiff_range {} poldiff_range_t;
++typedef struct {} poldiff_range_t;
+ %extend poldiff_range_t {
+ 	poldiff_range_t() {
+       BEGIN_EXCEPTION
+@@ -908,7 +908,7 @@ typedef struct poldiff_range {} poldiff_
+ %}
+ 
+ /* range_transition rule diff */
+-typedef struct poldiff_range_trans {} poldiff_range_trans_t;
++typedef struct {} poldiff_range_trans_t;
+ %extend poldiff_range_trans_t {
+ 	poldiff_range_trans_t() {
+       BEGIN_EXCEPTION
+@@ -956,7 +956,7 @@ typedef struct poldiff_range_trans {} po
+ %}
+ 
+ /* role allow rule diff */
+-typedef struct poldiff_role_allow {} poldiff_role_allow_t;
++typedef struct {} poldiff_role_allow_t;
+ %extend poldiff_role_allow_t {
+ 	poldiff_role_allow_t() {
+       BEGIN_EXCEPTION
+@@ -1004,7 +1004,7 @@ typedef struct poldiff_role_allow {} pol
+ %}
+ 
+ /* role_transition rule diff */
+-typedef struct poldiff_role_trans {} poldiff_role_trans_t;
++typedef struct {} poldiff_role_trans_t;
+ %extend poldiff_role_trans_t {
+ 	poldiff_role_trans_t() {
+       BEGIN_EXCEPTION
+@@ -1052,7 +1052,7 @@ typedef struct poldiff_role_trans {} pol
+ %}
+ 
+ /* role diff */
+-typedef struct poldiff_role {} poldiff_role_t;
++typedef struct {} poldiff_role_t;
+ %extend poldiff_role_t {
+ 	poldiff_role_t() {
+       BEGIN_EXCEPTION
+@@ -1097,7 +1097,7 @@ typedef struct poldiff_role {} poldiff_r
+ %}
+ 
+ /* te rule diff */
+-typedef struct poldiff_terule {} poldiff_terule_t;
++typedef struct {} poldiff_terule_t;
+ %extend poldiff_terule_t {
+ 	poldiff_terule_t() {
+       BEGIN_EXCEPTION
+@@ -1178,7 +1178,7 @@ typedef struct poldiff_terule {} poldiff
+ %}
+ 
+ /* type diff */
+-typedef struct poldiff_type {} poldiff_type_t;
++typedef struct {} poldiff_type_t;
+ %extend poldiff_type_t {
+ 	poldiff_type_t() {
+       BEGIN_EXCEPTION
+@@ -1223,7 +1223,7 @@ typedef struct poldiff_type {} poldiff_t
+ %}
+ 
+ /* user diff */
+-typedef struct poldiff_user {} poldiff_user_t;
++typedef struct {} poldiff_user_t;
+ %extend poldiff_user_t {
+ 	poldiff_user_t() {
+       BEGIN_EXCEPTION
+@@ -1280,7 +1280,7 @@ typedef struct poldiff_user {} poldiff_u
+ %}
+ 
+ /* type remap */
+-typedef struct poldiff_type_remap_entry {} poldiff_type_remap_entry_t;
++typedef struct {} poldiff_type_remap_entry_t;
+ %extend poldiff_type_remap_entry_t {
+ 	poldiff_type_remap_entry_t() {
+       BEGIN_EXCEPTION
+--- a/libqpol/swig/qpol.i
++++ b/libqpol/swig/qpol.i
+@@ -226,7 +226,7 @@ SWIGEXPORT int Tqpol_Init(Tcl_Interp *in
+ #define QPOL_MODULE_UNKNOWN 0
+ #define QPOL_MODULE_BASE    1
+ #define QPOL_MODULE_OTHER   2
+-typedef struct qpol_module {} qpol_module_t;
++typedef struct {} qpol_module_t;
+ %extend qpol_module_t {
+ 	qpol_module_t(const char *path) {
+ 		qpol_module_t *m;
+@@ -310,7 +310,7 @@ typedef struct qpol_module {} qpol_modul
+ #define QPOL_POLICY_OPTION_NO_NEVERALLOWS 0x00000001
+ #define QPOL_POLICY_OPTION_NO_RULES       0x00000002
+ #define QPOL_POLICY_OPTION_MATCH_SYSTEM   0x00000004
+-typedef struct qpol_policy {} qpol_policy_t;
++typedef struct {} qpol_policy_t;
+ typedef void (*qpol_callback_fn_t) (void *varg, struct qpol_policy * policy, int level, const char *fmt, va_list va_args);
+ #define QPOL_POLICY_UNKNOWN       -1
+ #define QPOL_POLICY_KERNEL_SOURCE  0
+@@ -684,7 +684,7 @@ typedef enum qpol_capability
+ };
+ 
+ /* qpol iterator */
+-typedef struct qpol_iterator {} qpol_iterator_t;
++typedef struct {} qpol_iterator_t;
+ %extend qpol_iterator_t {
+ 	/* user never directly creates, but SWIG expects a constructor */
+ 	qpol_iterator_t() {
+@@ -734,7 +734,7 @@ typedef struct qpol_iterator {} qpol_ite
+ };
+ 
+ /* qpol type */
+-typedef struct qpol_type {} qpol_type_t;
++typedef struct {} qpol_type_t;
+ %extend qpol_type_t {
+ 	qpol_type_t(qpol_policy_t *p, const char *name) {
+ 		BEGIN_EXCEPTION
+@@ -849,7 +849,7 @@ typedef struct qpol_type {} qpol_type_t;
+ %}
+ 
+ /* qpol role */
+-typedef struct qpol_role {} qpol_role_t;
++typedef struct {} qpol_role_t;
+ %extend qpol_role_t {
+ 	qpol_role_t(qpol_policy_t *p, const char *name) {
+ 		const qpol_role_t *r;
+@@ -917,7 +917,7 @@ typedef struct qpol_role {} qpol_role_t;
+ %}
+ 
+ /* qpol level */
+-typedef struct qpol_level {} qpol_level_t;
++typedef struct {} qpol_level_t;
+ %extend qpol_level_t {
+ 	qpol_level_t(qpol_policy_t *p, const char *name) {
+ 		const qpol_level_t *l;
+@@ -995,7 +995,7 @@ typedef struct qpol_level {} qpol_level_
+ %}
+ 
+ /* qpol cat */
+-typedef struct qpol_cat {} qpol_cat_t;
++typedef struct {} qpol_cat_t;
+ %extend qpol_cat_t {
+ 	qpol_cat_t(qpol_policy_t *p, const char *name) {
+ 		const qpol_cat_t *c;
+@@ -1062,7 +1062,7 @@ typedef struct qpol_cat {} qpol_cat_t;
+ %}
+ 
+ /* qpol mls range */
+-typedef struct qpol_mls_range {} qpol_mls_range_t;
++typedef struct {} qpol_mls_range_t;
+ %extend qpol_mls_range_t {
+ 	qpol_mls_range_t() {
+ 		BEGIN_EXCEPTION
+@@ -1103,7 +1103,7 @@ typedef struct qpol_mls_range {} qpol_ml
+ %}
+ 
+ /* qpol mls level */
+-typedef struct qpol_mls_level {} qpol_mls_level_t;
++typedef struct {} qpol_mls_level_t;
+ %extend qpol_mls_level_t {
+ 	qpol_mls_level_t() {
+ 		BEGIN_EXCEPTION
+@@ -1145,7 +1145,7 @@ typedef struct qpol_mls_level {} qpol_ml
+ %}
+ 
+ /* qpol user */
+-typedef struct qpol_user {} qpol_user_t;
++typedef struct {} qpol_user_t;
+ %extend qpol_user_t {
+ 	qpol_user_t(qpol_policy_t *p, const char *name) {
+ 		const qpol_user_t *u;
+@@ -1221,7 +1221,7 @@ typedef struct qpol_user {} qpol_user_t;
+ %}
+ 
+ /* qpol bool */
+-typedef struct qpol_bool {} qpol_bool_t;
++typedef struct {} qpol_bool_t;
+ %extend qpol_bool_t {
+ 	qpol_bool_t(qpol_policy_t *p, const char *name) {
+ 		qpol_bool_t *b;
+@@ -1293,7 +1293,7 @@ typedef struct qpol_bool {} qpol_bool_t;
+ %}
+ 
+ /* qpol context */
+-typedef struct qpol_context {} qpol_context_t;
++typedef struct {} qpol_context_t;
+ %extend qpol_context_t {
+ 	qpol_context_t() {
+ 		BEGIN_EXCEPTION
+@@ -1354,7 +1354,7 @@ typedef struct qpol_context {} qpol_cont
+ %}
+ 
+ /* qpol class */
+-typedef struct qpol_class {} qpol_class_t;
++typedef struct {} qpol_class_t;
+ %extend qpol_class_t {
+ 	qpol_class_t(qpol_policy_t *p, const char *name) {
+ 		const qpol_class_t *c;
+@@ -1441,7 +1441,7 @@ typedef struct qpol_class {} qpol_class_
+ %}
+ 
+ /* qpol common */
+-typedef struct qpol_common {} qpol_common_t;
++typedef struct {} qpol_common_t;
+ %extend qpol_common_t {
+ 	qpol_common_t(qpol_policy_t *p, const char *name) {
+ 		const qpol_common_t *c;
+@@ -1514,7 +1514,7 @@ typedef struct qpol_common {} qpol_commo
+ #define QPOL_FS_USE_NONE  5U
+ #define QPOL_FS_USE_PSID  6U
+ #endif
+-typedef struct qpol_fs_use {} qpol_fs_use_t;
++typedef struct {} qpol_fs_use_t;
+ %extend qpol_fs_use_t {
+ 	qpol_fs_use_t(qpol_policy_t *p, const char *name) {
+ 		const qpol_fs_use_t *f;
+@@ -1592,7 +1592,7 @@ typedef struct qpol_fs_use {} qpol_fs_us
+ #define QPOL_CLASS_LNK_FILE   9U
+ #define QPOL_CLASS_SOCK_FILE 12U
+ #endif
+-typedef struct qpol_genfscon {} qpol_genfscon_t;
++typedef struct {} qpol_genfscon_t;
+ %extend qpol_genfscon_t {
+ 	qpol_genfscon_t(qpol_policy_t *p, const char *name, const char *path) {
+ 		qpol_genfscon_t *g;
+@@ -1655,7 +1655,7 @@ typedef struct qpol_genfscon {} qpol_gen
+ %}
+ 
+ /* qpol isid */
+-typedef struct qpol_isid {} qpol_isid_t;
++typedef struct {} qpol_isid_t;
+ %extend qpol_isid_t {
+ 	qpol_isid_t(qpol_policy_t *p, const char *name) {
+ 		const qpol_isid_t *i;
+@@ -1699,7 +1699,7 @@ typedef struct qpol_isid {} qpol_isid_t;
+ %}
+ 
+ /* qpol netifcon */
+-typedef struct qpol_netifcon {} qpol_netifcon_t;
++typedef struct {} qpol_netifcon_t;
+ %extend qpol_netifcon_t {
+ 	qpol_netifcon_t(qpol_policy_t *p, const char *name) {
+ 		const qpol_netifcon_t *n;
+@@ -1755,7 +1755,7 @@ typedef struct qpol_netifcon {} qpol_net
+ /* qpol nodecon */
+ #define QPOL_IPV4 0
+ #define QPOL_IPV6 1
+-typedef struct qpol_nodecon {} qpol_nodecon_t;
++typedef struct {} qpol_nodecon_t;
+ %extend qpol_nodecon_t {
+ 	qpol_nodecon_t(qpol_policy_t *p, int addr[4], int mask[4], int protocol) {
+ 		uint32_t a[4], m[4];
+@@ -1828,7 +1828,7 @@ typedef struct qpol_nodecon {} qpol_node
+ /* from netinet/in.h */
+ #define IPPROTO_TCP 6
+ #define IPPROTO_UDP 17
+-typedef struct qpol_portcon {} qpol_portcon_t;
++typedef struct {} qpol_portcon_t;
+ %extend qpol_portcon_t {
+ 	qpol_portcon_t(qpol_policy_t *p, uint16_t low, uint16_t high, uint8_t protocol) {
+ 		const qpol_portcon_t *qp;
+@@ -1892,7 +1892,7 @@ typedef struct qpol_portcon {} qpol_port
+ %}
+ 
+ /* qpol constraint */
+-typedef struct qpol_constraint {} qpol_constraint_t;
++typedef struct {} qpol_constraint_t;
+ %extend qpol_constraint_t {
+ 	qpol_constraint_t() {
+ 		BEGIN_EXCEPTION
+@@ -1944,7 +1944,7 @@ typedef struct qpol_constraint {} qpol_c
+ %}
+ 
+ /* qpol validatetrans */
+-typedef struct qpol_validatetrans {} qpol_validatetrans_t;
++typedef struct {} qpol_validatetrans_t;
+ %extend qpol_validatetrans_t {
+ 	qpol_validatetrans_t() {
+ 		BEGIN_EXCEPTION
+@@ -2009,7 +2009,7 @@ typedef struct qpol_validatetrans {} qpo
+ #define QPOL_CEXPR_OP_DOM    3
+ #define QPOL_CEXPR_OP_DOMBY  4
+ #define QPOL_CEXPR_OP_INCOMP 5
+-typedef struct qpol_constraint_expr_node {} qpol_constraint_expr_node_t;
++typedef struct {} qpol_constraint_expr_node_t;
+ %extend qpol_constraint_expr_node_t {
+ 	qpol_constraint_expr_node_t() {
+ 		BEGIN_EXCEPTION
+@@ -2071,7 +2071,7 @@ typedef struct qpol_constraint_expr_node
+ %}
+ 
+ /* qpol role allow */
+-typedef struct qpol_role_allow {} qpol_role_allow_t;
++typedef struct {} qpol_role_allow_t;
+ %extend qpol_role_allow_t {
+ 	qpol_role_allow_t() {
+ 		BEGIN_EXCEPTION
+@@ -2112,7 +2112,7 @@ typedef struct qpol_role_allow {} qpol_r
+ %}
+ 
+ /* qpol role trans */
+-typedef struct qpol_role_trans {} qpol_role_trans_t;
++typedef struct {} qpol_role_trans_t;
+ %extend qpol_role_trans_t {
+ 	qpol_role_trans_t() {
+ 		BEGIN_EXCEPTION
+@@ -2163,7 +2163,7 @@ typedef struct qpol_role_trans {} qpol_r
+ %}
+ 
+ /* qpol range trans */
+-typedef struct qpol_range_trans {} qpol_range_trans_t;
++typedef struct {} qpol_range_trans_t;
+ %extend qpol_range_trans_t {
+ 	qpol_range_trans_t() {
+ 		BEGIN_EXCEPTION
+@@ -2226,7 +2226,7 @@ typedef struct qpol_range_trans {} qpol_
+ #define QPOL_RULE_NEVERALLOW  128
+ #define QPOL_RULE_AUDITALLOW    2
+ #define QPOL_RULE_DONTAUDIT     4
+-typedef struct qpol_avrule {} qpol_avrule_t;
++typedef struct {} qpol_avrule_t;
+ %extend qpol_avrule_t {
+ 	qpol_avrule_t() {
+ 		BEGIN_EXCEPTION
+@@ -2346,7 +2346,7 @@ typedef struct qpol_avrule {} qpol_avrul
+ #define QPOL_RULE_TYPE_TRANS   16
+ #define QPOL_RULE_TYPE_CHANGE  64
+ #define QPOL_RULE_TYPE_MEMBER  32
+-typedef struct qpol_terule {} qpol_terule_t;
++typedef struct {} qpol_terule_t;
+ %extend qpol_terule_t {
+ 	qpol_terule_t() {
+ 		BEGIN_EXCEPTION
+@@ -2462,7 +2462,7 @@ typedef struct qpol_terule {} qpol_terul
+ %}
+ 
+ /* qpol conditional */
+-typedef struct qpol_cond {} qpol_cond_t;
++typedef struct {} qpol_cond_t;
+ %extend qpol_cond_t {
+ 	qpol_cond_t() {
+ 		BEGIN_EXCEPTION
+@@ -2555,7 +2555,7 @@ typedef struct qpol_cond {} qpol_cond_t;
+ #define QPOL_COND_EXPR_XOR  5      /* bool ^ bool */
+ #define QPOL_COND_EXPR_EQ   6      /* bool == bool */
+ #define QPOL_COND_EXPR_NEQ  7      /* bool != bool */
+-typedef struct qpol_cond_expr_node {} qpol_cond_expr_node_t;
++typedef struct {} qpol_cond_expr_node_t;
+ %extend qpol_cond_expr_node_t {
+ 	qpol_cond_expr_node_t() {
+ 		BEGIN_EXCEPTION
+@@ -2600,7 +2600,7 @@ typedef struct qpol_cond_expr_node {} qp
+ %}
+ 
+ /* qpol type set */
+-typedef struct qpol_type_set {} qpol_type_set_t;
++typedef struct {} qpol_type_set_t;
+ %extend qpol_type_set_t {
+ 	qpol_type_set_t() {
+ 		BEGIN_EXCEPTION
+@@ -2663,7 +2663,7 @@ typedef struct qpol_type_set {} qpol_typ
+ %}
+ 
+ /* qpol syn av rule */
+-typedef struct qpol_syn_avrule {} qpol_syn_avrule_t;
++typedef struct {} qpol_syn_avrule_t;
+ %extend qpol_syn_avrule_t {
+ 	qpol_syn_avrule_t() {
+ 		BEGIN_EXCEPTION
+@@ -2776,7 +2776,7 @@ typedef struct qpol_syn_avrule {} qpol_s
+ %}
+ 
+ /* qpol syn te rule */
+-typedef struct qpol_syn_terule {} qpol_syn_terule_t;
++typedef struct {} qpol_syn_terule_t;
+ %extend qpol_syn_terule_t {
+ 	qpol_syn_terule_t() {
+ 		BEGIN_EXCEPTION
+--- a/libseaudit/swig/seaudit.i
++++ b/libseaudit/swig/seaudit.i
+@@ -192,7 +192,7 @@ SWIGEXPORT int Tseaudit_Init(Tcl_Interp
+ #define SWIG_exception(code, msg) {tcl_throw_error(msg); goto fail;}
+ #endif
+ 
+-%inline %{
++%{
+ 	typedef struct apol_string_vector apol_string_vector_t;
+ %}
+ 
+@@ -240,7 +240,7 @@ SWIGEXPORT int Tseaudit_Init(Tcl_Interp
+ %{
+ 	typedef struct tm tm_t;
+ %}
+-typedef struct tm {
++typedef struct {
+ 	int tm_sec;   /* seconds */
+ 	int tm_min;   /* minutes */
+ 	int tm_hour;  /* hours */
+@@ -278,7 +278,7 @@ typedef enum seaudit_log_type
+ 	SEAUDIT_LOG_TYPE_SYSLOG,
+ 	SEAUDIT_LOG_TYPE_AUDITD
+ } seaudit_log_type_e;
+-typedef struct seaudit_log {} seaudit_log_t;
++typedef struct {} seaudit_log_t;
+ %extend seaudit_log_t {
+ 	seaudit_log_t() {
+ 		seaudit_log_t *slog;
+@@ -355,7 +355,7 @@ typedef enum seaudit_message_type
+ 	SEAUDIT_MESSAGE_TYPE_AVC,
+ 	SEAUDIT_MESSAGE_TYPE_LOAD
+ } seaudit_message_type_e;
+-typedef struct seaudit_message {} seaudit_message_t;
++typedef struct {} seaudit_message_t;
+ %extend seaudit_message_t {
+ 	seaudit_message_t() {
+ 		BEGIN_EXCEPTION
+@@ -427,7 +427,7 @@ typedef struct seaudit_message {} seaudi
+ %}
+ 
+ /* seaudit load message */
+-typedef struct seaudit_load_message {} seaudit_load_message_t;
++typedef struct {} seaudit_load_message_t;
+ %extend seaudit_load_message_t {
+ 	seaudit_load_message_t() {
+ 		BEGIN_EXCEPTION
+@@ -448,7 +448,7 @@ typedef struct seaudit_load_message {} s
+ %}
+ 
+ /* seaudit bool message */
+-typedef struct seaudit_bool_message {} seaudit_bool_message_t;
++typedef struct {} seaudit_bool_message_t;
+ %extend seaudit_bool_message_t {
+ 	seaudit_bool_message_t(void *msg) {
+ 		BEGIN_EXCEPTION
+@@ -475,7 +475,7 @@ typedef enum seaudit_avc_message_type
+ 	SEAUDIT_AVC_DENIED,
+ 	SEAUDIT_AVC_GRANTED
+ } seaudit_avc_message_type_e;
+-typedef struct seaudit_avc_message {} seaudit_avc_message_t;
++typedef struct {} seaudit_avc_message_t;
+ %extend seaudit_avc_message_t {
+ 	seaudit_avc_message_t() {
+ 		BEGIN_EXCEPTION
+@@ -606,7 +606,7 @@ typedef enum seaudit_filter_date_match
+ 	SEAUDIT_FILTER_DATE_MATCH_AFTER,
+ 	SEAUDIT_FILTER_DATE_MATCH_BETWEEN
+ } seaudit_filter_date_match_e;
+-typedef struct seaudit_filter {} seaudit_filter_t;
++typedef struct {} seaudit_filter_t;
+ %extend seaudit_filter_t {
+ 	seaudit_filter_t(char *name = NULL) {
+ 		seaudit_filter_t *sf = NULL;
+@@ -972,7 +972,7 @@ typedef struct seaudit_filter {} seaudit
+ 	seaudit_message_type_e get_message_type() {
+ 		return seaudit_filter_get_message_type(self);
+ 	};
+-	void set_date(struct tm *start, struct tm *end, seaudit_filter_date_match_e match) {
++	void set_date(tm_t *start, tm_t *end, seaudit_filter_date_match_e match) {
+ 		BEGIN_EXCEPTION
+ 		if (seaudit_filter_set_date(self, start, end, match)) {
+ 			SWIG_exception(SWIG_RuntimeError, "Could not set date for filter");
+@@ -981,14 +981,14 @@ typedef struct seaudit_filter {} seaudit
+ 	fail:
+ 		return;
+ 	};
+-	const struct tm *get_start_date() {
++	const tm_t *get_start_date() {
+ 		const struct tm *s;
+ 		const struct tm *e;
+ 		seaudit_filter_date_match_e m;
+ 		seaudit_filter_get_date(self, &s, &e, &m);
+ 		return s;
+ 	};
+-	const struct tm *get_end_date() {
++	const tm_t *get_end_date() {
+ 		const struct tm *s;
+ 		const struct tm *e;
+ 		seaudit_filter_date_match_e m;
+@@ -1012,7 +1012,7 @@ apol_vector_t *seaudit_filter_create_fro
+ %}
+ 
+ /* seaudit sort */
+-typedef struct seaudit_sort {} seaudit_sort_t;
++typedef struct {} seaudit_sort_t;
+ %extend seaudit_sort_t {
+ 	seaudit_sort_t() {
+ 		BEGIN_EXCEPTION
+@@ -1101,17 +1101,17 @@ extern seaudit_sort_t *seaudit_sort_by_c
+ %typemap(in) seaudit_filter_t *filter {
+ 	void *x = NULL;
+ 	Py_IncRef($input);
+-	SWIG_ConvertPtr($input, &x,SWIGTYPE_p_seaudit_filter, 0 |  0 );
++	SWIG_ConvertPtr($input, &x,SWIGTYPE_p_seaudit_filter_t, 0 |  0 );
+ 	$1 = (seaudit_filter_t*)x;
+ }
+ %typemap(in) seaudit_sort_t *ssort {
+ 	void *x = NULL;
+ 	Py_IncRef($input);
+-	SWIG_ConvertPtr($input, &x,SWIGTYPE_p_seaudit_sort, 0 |  0 );
++	SWIG_ConvertPtr($input, &x,SWIGTYPE_p_seaudit_sort_t, 0 |  0 );
+ 	$1 = (seaudit_sort_t*)x;
+ }
+ #endif
+-typedef struct seaudit_model {} seaudit_model_t;
++typedef struct {} seaudit_model_t;
+ %extend seaudit_model_t {
+ 	seaudit_model_t(char *name = NULL, seaudit_log_t *slog = NULL) {
+ 		seaudit_model_t *smod;
+@@ -1309,7 +1309,7 @@ typedef enum seaudit_report_format
+ 	SEAUDIT_REPORT_FORMAT_TEXT,
+ 	SEAUDIT_REPORT_FORMAT_HTML
+ } seaudit_report_format_e;
+-typedef struct seaudit_report {} seaudit_report_t;
++typedef struct {} seaudit_report_t;
+ %extend seaudit_report_t {
+ 	seaudit_report_t(seaudit_model_t *m) {
+ 		seaudit_report_t *sr;

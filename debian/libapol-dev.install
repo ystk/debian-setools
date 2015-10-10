@@ -1,0 +1,4 @@
+usr/include/apol/
+usr/lib/*/libapol.a
+usr/lib/*/libapol.so
+usr/lib/*/pkgconfig/libapol.pc

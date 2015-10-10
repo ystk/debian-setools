@@ -1,0 +1,32 @@
+Description: Fix FTBFS with swig >= 2.0
+Author: Sebastian Ramacher <s.ramacher@gmx.at>
+Date: Tue, 28 Jun 2011 22:19:49 +0200
+Bug-Debian: http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=631800
+
+--- setools-3.3.6.ds.orig/m4/ac_pkg_swig.m4	2007-02-09 18:32:41.000000000 +0100
++++ setools-3.3.6.ds/m4/ac_pkg_swig.m4	2011-06-27 14:12:03.000000000 +0200
+@@ -106,15 +106,18 @@
+                         if test -z "$available_patch" ; then
+                                 [available_patch=0]
+                         fi
+-                        if test $available_major -ne $required_major \
+-                                -o $available_minor -ne $required_minor \
+-                                -o $available_patch -lt $required_patch ; then
+-                                AC_MSG_WARN([SWIG version >= $1 is required.  You have $swig_version.  You should look at http://www.swig.org])
+-                                SWIG='echo "Error: SWIG version >= $1 is required.  You have '"$swig_version"'.  You should look at http://www.swig.org" ; false'
+-                        else
++                        if test $available_major -gt $required_major || \
++                                ( test $available_major -eq $required_major && \
++                                      test $available_minor -gt $required_minor ) || \
++                                ( test $available_major -eq $required_major && \
++                                        test $available_minor -eq $required_minor && \
++                                        test $available_patch -ge $required_patch ) ; then
+                                 AC_MSG_NOTICE([SWIG executable is '$SWIG'])
+                                 SWIG_LIB=`$SWIG -swiglib`
+                                 AC_MSG_NOTICE([SWIG library directory is '$SWIG_LIB'])
++                        else
++                                AC_MSG_WARN([SWIG version >= $1 is required.  You have $swig_version.  You should look at http://www.swig.org])
++                                SWIG='echo "Error: SWIG version >= $1 is required.  You have '"$swig_version"'.  You should look at http://www.swig.org" ; false'
+                         fi
+                 else
+                         AC_MSG_WARN([cannot determine SWIG version])

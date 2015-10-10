@@ -1,0 +1,4 @@
+usr/include/sefs/
+usr/lib/*/libsefs.a
+usr/lib/*/libsefs.so
+usr/lib/*/pkgconfig/libsefs.pc

@@ -1,0 +1,41 @@
+seaudit/seaudit-report-group.conf etc/logwatch/conf/logfiles/
+seaudit/seaudit-report-service etc/logwatch/scripts/services/
+seaudit/seaudit-report-service.conf etc/logwatch/conf/services/
+usr/bin/apol
+usr/bin/seaudit-report
+usr/bin/sediffx
+usr/lib/*/setools/apol_tcl/*
+usr/sbin/
+usr/share/man/man1/apol.1
+usr/share/man/man1/sediffx.1
+usr/share/man/man8/seaudit-report.8
+usr/share/man/man8/seaudit.8
+usr/share/setools/3.3/apol.gif
+usr/share/setools/3.3/apol_help.txt
+usr/share/setools/3.3/apol_perm_mapping_ver12
+usr/share/setools/3.3/apol_perm_mapping_ver15
+usr/share/setools/3.3/apol_perm_mapping_ver16
+usr/share/setools/3.3/apol_perm_mapping_ver17
+usr/share/setools/3.3/apol_perm_mapping_ver18
+usr/share/setools/3.3/apol_perm_mapping_ver19
+usr/share/setools/3.3/apol_perm_mapping_ver20
+usr/share/setools/3.3/apol_perm_mapping_ver21
+usr/share/setools/3.3/apol_perm_mapping_ver22
+usr/share/setools/3.3/apol_perm_mapping_ver23
+usr/share/setools/3.3/apol_perm_mapping_ver24
+usr/share/setools/3.3/domaintrans_help.txt
+usr/share/setools/3.3/dot_seaudit
+usr/share/setools/3.3/file_relabel_help.txt
+usr/share/setools/3.3/infoflow_help.txt
+usr/share/setools/3.3/seaudit-report-service
+usr/share/setools/3.3/seaudit-report.conf
+usr/share/setools/3.3/seaudit-report.css
+usr/share/setools/3.3/seaudit-small.png
+usr/share/setools/3.3/seaudit.glade
+usr/share/setools/3.3/seaudit.png
+usr/share/setools/3.3/seaudit_help.txt
+usr/share/setools/3.3/sediff_help.txt
+usr/share/setools/3.3/sediffx-small.png
+usr/share/setools/3.3/sediffx.glade
+usr/share/setools/3.3/sediffx.png
+usr/share/setools/3.3/types_relation_help.txt

@@ -1,0 +1,116 @@
+Description: Do not build tcl module with a soname and do not generate symlinks
+Author: Laurent Bigonville <bigon@debian.org>
+Date: Tue, 13 Mar 2012 21:51:04 +0100
+
+--- a/libapol/swig/tcl/Makefile.am
++++ b/libapol/swig/tcl/Makefile.am
+@@ -1,4 +1,4 @@
+-wrappedso_DATA = libtapol.so.@libapol_version@
++wrappedso_DATA = libtapol.so
+ wrappedso_SONAME = @libapol_tswig_soname@
+ short_name = libtapol.so
+ wrappedsodir = $(libdir)/setools/apol
+@@ -21,9 +21,7 @@ $(BUILT_SOURCES): $(dist_noinst_DATA) $(
+ 	$(SWIG) $(SWIG_TCL_OPT) -pkgversion @libapol_version@ -o $@ -I$(top_srcdir)/libapol/include -I$(top_srcdir)/libqpol/swig $<
+ 
+ $(wrappedso_DATA): $(BUILT_SOURCES)
+-	$(CC) -shared -o $@ $^ $(AM_CFLAGS) $(CFLAGS) $(SWIG_TCL_CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -Wl,-soname,$(wrappedso_SONAME)
+-	$(LN_S) -f $@ $(wrappedso_SONAME)
+-	$(LN_S) -f $@ $(short_name)
++	$(CC) -shared -o $@ $^ $(AM_CFLAGS) $(CFLAGS) $(SWIG_TCL_CFLAGS) $(AM_LDFLAGS) $(LDFLAGS)
+ 
+ $(package_SCRIPTS): $(wrappedso_DATA)
+ 	echo "pkg_mkIndex . $^" | LD_LIBRARY_PATH=$(top_builddir)/libqpol/src:$(top_builddir)/libapol/src $(TCLSH_PROG)
+--- a/libpoldiff/swig/tcl/Makefile.am
++++ b/libpoldiff/swig/tcl/Makefile.am
+@@ -1,4 +1,4 @@
+-wrappedso_DATA = libtpoldiff.so.@libpoldiff_version@
++wrappedso_DATA = libtpoldiff.so
+ wrappedso_SONAME = @libpoldiff_tswig_soname@
+ short_name = libtpoldiff.so
+ wrappedsodir = $(libdir)/setools/poldiff
+@@ -22,9 +22,7 @@ $(BUILT_SOURCES): $(dist_noinst_DATA) $(
+ 	$(SWIG) $(SWIG_TCL_OPT) -pkgversion @libpoldiff_version@ -o $@ -I$(top_srcdir)/libpoldiff/include -I$(top_srcdir)/libapol/include -I$(top_srcdir)/libapol/swig -I$(top_srcdir)/libqpol/swig $<
+ 
+ $(wrappedso_DATA): $(BUILT_SOURCES)
+-	$(CC) -shared -o $@ $^ $(AM_CFLAGS) $(CFLAGS) $(SWIG_TCL_CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -Wl,-soname,$(wrappedso_SONAME)
+-	$(LN_S) -f $@ $(wrappedso_SONAME)
+-	$(LN_S) -f $@ $(short_name)
++	$(CC) -shared -o $@ $^ $(AM_CFLAGS) $(CFLAGS) $(SWIG_TCL_CFLAGS) $(AM_LDFLAGS) $(LDFLAGS)
+ 
+ $(package_SCRIPTS): $(wrappedso_DATA)
+ 	echo "pkg_mkIndex . $^" | LD_LIBRARY_PATH=$(top_builddir)/libqpol/src:$(top_builddir)/libapol/src:$(top_builddir)/libpoldiff/src $(TCLSH_PROG)
+--- a/libqpol/swig/tcl/Makefile.am
++++ b/libqpol/swig/tcl/Makefile.am
+@@ -1,4 +1,4 @@
+-wrappedso_DATA = libtqpol.so.@libqpol_version@
++wrappedso_DATA = libtqpol.so
+ wrappedso_SONAME = @libqpol_tswig_soname@
+ short_name = libtqpol.so
+ wrappedsodir = $(libdir)/setools/qpol
+@@ -18,9 +18,7 @@ $(BUILT_SOURCES): $(dist_noinst_DATA) $(
+ 	$(SWIG) $(SWIG_TCL_OPT) -pkgversion @libqpol_version@ -o $@ $<
+ 
+ $(wrappedso_DATA): $(BUILT_SOURCES)
+-	$(CC) -shared -o $@ $^ $(AM_CFLAGS) $(CFLAGS) $(SWIG_TCL_CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -Wl,-soname,$(wrappedso_SONAME)
+-	$(LN_S) -f $@ $(wrappedso_SONAME)
+-	$(LN_S) -f $@ $(short_name)
++	$(CC) -shared -o $@ $^ $(AM_CFLAGS) $(CFLAGS) $(SWIG_TCL_CFLAGS) $(AM_LDFLAGS) $(LDFLAGS)
+ 
+ libdirs = $(top_builddir)/libqpol/src
+ 
+--- a/libseaudit/swig/tcl/Makefile.am
++++ b/libseaudit/swig/tcl/Makefile.am
+@@ -1,4 +1,4 @@
+-wrappedso_DATA = libtseaudit.so.@libseaudit_version@
++wrappedso_DATA = libtseaudit.so
+ wrappedso_SONAME = @libseaudit_tswig_soname@
+ short_name = libtseaudit.so
+ wrappedsodir = $(libdir)/setools/seaudit
+@@ -22,9 +22,7 @@ $(BUILT_SOURCES): $(dist_noinst_DATA) $(
+ 	$(SWIG) $(SWIG_TCL_OPT) -pkgversion @libseaudit_version@ -o $@ -I$(top_srcdir)/libseaudit/include -I$(top_srcdir)/libapol/include -I$(top_srcdir)/libapol/swig -I$(top_srcdir)/libqpol/swig $<
+ 
+ $(wrappedso_DATA): $(BUILT_SOURCES)
+-	$(CC) -shared -o $@ $^ $(AM_CFLAGS) $(CFLAGS) $(SWIG_TCL_CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -Wl,-soname,$(wrappedso_SONAME)
+-	$(LN_S) -f $@ $(wrappedso_SONAME)
+-	$(LN_S) -f $@ $(short_name)
++	$(CC) -shared -o $@ $^ $(AM_CFLAGS) $(CFLAGS) $(SWIG_TCL_CFLAGS) $(AM_LDFLAGS) $(LDFLAGS)
+ 
+ $(package_SCRIPTS): $(wrappedso_DATA)
+ 	echo "pkg_mkIndex . $^" | LD_LIBRARY_PATH=$(top_builddir)/libqpol/src:$(top_builddir)/libapol/src:$(top_builddir)/libseaudit/src $(TCLSH_PROG)
+--- a/libsefs/swig/tcl/Makefile.am
++++ b/libsefs/swig/tcl/Makefile.am
+@@ -1,4 +1,4 @@
+-wrappedso_DATA = libtsefs.so.@libsefs_version@
++wrappedso_DATA = libtsefs.so
+ wrappedso_SONAME = @libsefs_tswig_soname@
+ short_name = libtsefs.so
+ wrappedsodir = $(libdir)/setools/sefs
+@@ -22,9 +22,7 @@ $(BUILT_SOURCES): $(dist_noinst_DATA) $(
+ 	$(SWIG) -c++ $(SWIG_TCL_OPT) -pkgversion @libsefs_version@ -o $@ -I$(top_srcdir)/libsefs/include -I$(top_srcdir)/libapol/include -I$(top_srcdir)/libapol/swig -I$(top_srcdir)/libqpol/swig $<
+ 
+ $(wrappedso_DATA): $(BUILT_SOURCES)
+-	$(CXX) -shared -o $@ $^ $(AM_CXXFLAGS) $(CXXFLAGS) $(SWIG_TCL_CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -Wl,-soname,$(wrappedso_SONAME)
+-	$(LN_S) -f $@ $(wrappedso_SONAME)
+-	$(LN_S) -f $@ $(short_name)
++	$(CXX) -shared -o $@ $^ $(AM_CXXFLAGS) $(CXXFLAGS) $(SWIG_TCL_CFLAGS) $(AM_LDFLAGS) $(LDFLAGS)
+ 
+ $(package_SCRIPTS): $(wrappedso_DATA)
+ 	echo "pkg_mkIndex . $^" | LD_LIBRARY_PATH=$(top_builddir)/libqpol/src:$(top_builddir)/libapol/src:$(top_builddir)/libsefs/src $(TCLSH_PROG)
+--- a/apol/Makefile.am
++++ b/apol/Makefile.am
+@@ -1,4 +1,4 @@
+-wrappedso_DATA = libapol_tcl.so.@libapol_version@
++wrappedso_DATA = libapol_tcl.so
+ wrappedso_SONAME = $(wrappedso_DATA)
+ wrappedsodir = $(libdir)/setools/apol_tcl
+ 
+@@ -85,7 +85,7 @@ apol_tcl_wrap.cc: apol_tcl.i $(DEPENDENC
+ 	-I$(top_srcdir)/libqpol/swig $<
+ 
+ $(wrappedso_DATA): apol_tcl.cc apol_tcl_wrap.cc
+-	$(CXX) -shared -o $@ $^ $(AM_CXXFLAGS) $(CXXFLAGS) $(SWIG_TCL_CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -Wl,-soname,$(wrappedso_SONAME)
++	$(CXX) -shared -o $@ $^ $(AM_CXXFLAGS) $(CXXFLAGS) $(SWIG_TCL_CFLAGS) $(AM_LDFLAGS) $(LDFLAGS)
+ 
+ $(package_SCRIPTS): $(wrappedso_DATA) mkIndex.tcl
+ 	cat mkIndex.tcl | LD_LIBRARY_PATH=$(top_builddir)/libqpol/src:$(top_builddir)/libapol/src:$(top_builddir)/libsefs/src $(TCLSH_PROG)

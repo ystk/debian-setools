@@ -1,43 +1,414 @@
-setools (3.3.5-tresys0) unstable; urgency=low
+setools (3.3.8-3.1) unstable; urgency=medium
 
-  * Merged SETools 3.3.5 release into this package. 
+  [ Aurelien Jarno ]
+  * Non-maintainer upload.
 
- -- J. Tang <jtang@tresys.com>  Fri, 15 Aug 2008 12:00:00 -0500
+  [ Andreas Florath ]
+  * secmds/replcon.cc: Fixed prototype of lsetfilecon_raw.
+    (Closes: #750331)
 
-setools (3.3.4-0ubuntu1) hardy; urgency=low
+  [ Breno Leitao ]
+  * debian/libsefs4.symbols.ppc64el: link to the ppc64 symbols file.
+    (Closes: #753515)
 
-  * Merged SETools 3.3.4 release into this package. 
+ -- Aurelien Jarno <aurel32@debian.org>  Wed, 17 Sep 2014 22:33:48 +0200
 
- -- J. Tang <jtang@tresys.com>  Fri, 7 Mar 2008 12:00:00 -0500
+setools (3.3.8-3) unstable; urgency=medium
 
-setools (3.3.3-0ubuntu1) hardy; urgency=low
+  * Team upload.
+  * debian/control: Bump Standards-Version to 3.9.5 (no further changes)
+  * Add debian/patches/fix-sediffx-crash.patch: Fix sediffx crash (LP:
+    #1220618)
 
-  * Merged SETools 3.3.3 release into this package. 
+ -- Laurent Bigonville <bigon@debian.org>  Fri, 27 Dec 2013 17:43:56 +0100
 
- -- J. Tang <jtang@tresys.com>  Thu, 21 Feb 2008 12:00:00 -0500
+setools (3.3.8-2) unstable; urgency=low
 
-setools (3.3.2-0ubuntu3) hardy; urgency=low
+  * Team upload.
+  * Split GUI tools in their own package (LP: #598025)
+  * debian/control: Move libsetools-jni to the java Section
+  * debian/rules: Pass --as-needed to the linker and call dh_autoreconf with
+    --as-needed to minimize the runtime dependencies
+  * debian/control: Bump Standards-Version to 3.9.4 (no further changes)
+  * debian/control: Use the canonical URL for the VCS-Git field
+  * debian/rules: Supply --with-javac-flags to ensure java source/target is
+    set to 1.5. (LP: #1049807)
+  * debian/patches/fix-javacflags.patch: Use JAVACFLAGS instead of JAVAFLAGS
 
-  * debian/control
-    - Changed from java2-compiler to java2-sdk in build depends
-  * debian/rules
-    - Set JAVA_HOME environment variable for icedtea
-    - Set the --with-java-prefix configure flag
+ -- Laurent Bigonville <bigon@debian.org>  Sat, 07 Dec 2013 18:41:15 +0100
 
- -- Joseph Jackson IV <jjacksoniv@fluxbuntu.org>  Sat, 02 Feb 2008 20:44:56 -0500
+setools (3.3.8-1) unstable; urgency=low
 
-setools (3.3.2-0ubuntu2) hardy; urgency=low
+  * Team upload.
+  * New upstream release
+    - Fix seaudit crash on start (Closes: #706519)
+    - Drop d/p/add-setools-seinfo-and-sesearch-python-bindings.patch,
+      d/p/fix_configure.patch: Applied upstream
+    - d/p/configure_multiarch.patch, d/p/legacy.patch: Refreshed
+  * debian/libsefs4.symbols.powerpcspe: Fix FTBFS on powerpcspe (Closes:
+    #701100)
+  * debian/control:
+    - Bump libsepol1-dev and libselinux1-dev build-dependencies
+    - Remove unneeded build-dependencies
+  * debian/libqpol1.symbols, debian/libapol4.symbols: Adjust .symbols files
+  * debian/patches/python_setools_path.patch: Fix installation path of the
+    python modules
 
-  * debian/control
-    - Update Debian Maintainer field
+ -- Laurent Bigonville <bigon@debian.org>  Fri, 10 May 2013 01:18:24 +0200
 
- -- Joseph Jackson IV <jjacksoniv@fluxbuntu.org>  Sat, 02 Feb 2008 19:04:33 -0500
+setools (3.3.7-3.3) unstable; urgency=low
 
-setools (3.3.2-0ubuntu1) hardy; urgency=low
+  * Non-maintainer upload.
+  * debian/libsefs4.symbols.ppc64:
+    - Add symbols support for ppc64
 
-  * Merged SETools 3.3.2 release into this package. 
+ -- Nick Andrik <nick.andrik@gmail.com>  Mon, 28 Jan 2013 00:19:25 +0100
 
- -- J. Tang <jtang@tresys.com>  Tue, 29 Jan 2008 12:00:00 -0500
+setools (3.3.7-3.2) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * debian/libsefs4.symbols.s390x:
+    - Add symbols support for s390x architecture (identical to amd64)
+
+ -- Nick Andrik <nick.andrik@gmail.com>  Sun, 27 Jan 2013 23:08:31 +0100
+
+setools (3.3.7-3.1) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * debian/*.symbols*
+    - Update for arm/m68k architectures (Closes: #698572)
+    - Use non-architecture files and delete architecture ones when identical
+
+ -- Nick Andrik <nick.andrik@gmail.com>  Thu, 24 Jan 2013 00:08:22 +0000
+
+setools (3.3.7-3) unstable; urgency=low
+
+  * Team upload.
+  [ Laurent Bigonville ]
+  * debian/patches/legacy.patch: Further split legacy patch
+  * debian/patches/use_fPIC_instead_fpic.patch: Compile with -fPIC instead of
+    -fpic to avoid FTBFS on s390x
+  * debian/gbp.conf: Change default git-buildpackage build-directory
+  * debian/patches/setools-swig-2.0.7.patch: Fix FTBFS with swig 2.0.7
+    (Closes: #672040)
+
+  [ Niels Thykier ]
+  * Remove Build-Depends on gcj-native-helper. (Closes: #678163)
+  * Compile the swig extensions with default-java.
+
+ -- Laurent Bigonville <bigon@debian.org>  Thu, 28 Jun 2012 13:26:35 +0200
+
+setools (3.3.7-2) unstable; urgency=low
+
+  * Team upload.
+  * Add debian/patches/add-setools-seinfo-and-sesearch-python-bindings.patch:
+    Add seinfo and sesearch python binding (taken from Fedora)
+
+ -- Laurent Bigonville <bigon@debian.org>  Tue, 20 Mar 2012 19:01:43 +0100
+
+setools (3.3.7-1) unstable; urgency=low
+
+  * Team upload.
+  * New upstream release
+    - Refresh debian/patches/legacy.patch
+  * Rebuild against new libsepol version (Closes: #645008)
+  * Rebuild for python 2.7 (Closes: #645326)
+  * Switch to dpkg-source 3.0 (quilt) format
+  * Switch to dh sequence, dh_python2 and multiarch
+  * Always compile TCL modules for current tcl version (Closes: #604433)
+  * debian/patches/setools_ac_pkg_swig_m4_fixed.diff: Fix FTBFS with swig 2.0
+    (Closes: #631800)
+  * debian/patches/fix_configure.patch: Fix FTBFS with last libselinux
+    versions (taken from upstream) (Closes: #654595)
+  * debian/libsefs4.symbols.*: Update for removed symbol. Fixes FTBFS.
+    (LP: #802949) (Closes: #625678)
+  * debian/patches/fix_ftbfs_format_security.patch: Fix FTBFS with
+    -Werror=format-security
+  * debian/patches/no_link_python.patch: Do not build the python module with a
+    soname
+  * debian/patches/no_soname_tcl.patch: Do not build tcl module with a soname
+  * debian/patches/no_soname_java.patch: Do not build java module with a soname
+  * debian/control:
+    - Bump Standards-Version to 3.9.3 (no further changes)
+    - Only build package for linux architectures
+    - Drop really old Replaces
+    - Update to use dependencies of new java policy
+    - Add missing dependencies on -dev packages
+    - Add Homepage field
+    - Update Vcs-* fields
+    - Put the package under Debian SELinux team maintenance
+  * debian/patches/as_needed.patch: Fix build failure with ld --as-needed.
+    (Closes: #606020)
+  * debian/patches/configure_multiarch.patch: Fix libraries detection with
+    multi-arch
+  * debian/rules: Pass --disable-selinux-check to configure, selinux is
+    disabled on buildd and we shouldn't autodetect it
+  * Add debian/gbp.conf file
+
+ -- Laurent Bigonville <bigon@debian.org>  Wed, 14 Mar 2012 22:07:13 +0100
+
+setools (3.3.6.ds-7.2+powerpcspe1) unreleased; urgency=low
+
+  * Copied "powerpc" symbol files to "powerpcspe" for new port
+
+ -- Kyle Moffett <Kyle.D.Moffett@boeing.com>  Sat, 12 Jun 2010 15:12:26 -0400
+
+setools (3.3.6.ds-7.2) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * Run the configure script with bash                (Closes: #581884).
+
+ -- Jakub Wilk <jwilk@debian.org>  Tue, 18 May 2010 18:47:37 +0200
+
+setools (3.3.6.ds-7.1) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * libsefs built with GCC 4.3 is not binary-compatible with itself built with
+    GCC 4.4. That's because mangling of va_list has changed in GCC 4.4. To
+    cope with this situation, provide compatibility aliases for the affected
+    symbols and update symbol files accordingly.      (Closes: #577061).
+
+ -- Jakub Wilk <jwilk@debian.org>  Thu, 13 May 2010 17:40:33 +0200
+
+setools (3.3.6.ds-7) unstable; urgency=low
+
+  * Bug fix: "FTBFS with Python 2.6 as default", thanks to Jakub Wilk
+                                                      (Closes: #571554).
+  * Also remove .pyc and .pyo files from the binary package.
+  * Bug fix: "Please support Renesas SH(sh4)", thanks to Nobuhiro Iwamatsu
+                                                      (Closes: #565372).
+
+ -- Manoj Srivastava <srivasta@debian.org>  Sun, 04 Apr 2010 00:41:26 -0700
+
+setools (3.3.6.ds-6) unstable; urgency=medium
+
+  * [9025371]: topic--qpol-include-list-fix: Added missing \ in Makefile
+    The missing \ truncated the list of files to be installed in
+    /usr/include/qpol
+    Bug fix: "qpol/policy.h: No such file or directory", thanks to Pierre
+    Chifflier                                          (Closes: #545964).
+
+ -- Manoj Srivastava <srivasta@debian.org>  Thu, 10 Sep 2009 10:53:37 -0500
+
+setools (3.3.6.ds-5) unstable; urgency=low
+
+  * We really do need distinct symbols files for all the architectures,
+    thanks to va_list; so, with 13 architectures, and 5 libraries, those
+    are an added 65 files. However, this should fix the issue that setools
+    failed to build on every single buildd out there.
+
+ -- Manoj Srivastava <srivasta@debian.org>  Thu, 03 Sep 2009 15:38:07 -0500
+
+setools (3.3.6.ds-4) unstable; urgency=low
+
+  * First cut at providing symbols files.
+  * Check for extra libraries and shlib version numbers.  Unless there is
+    a nocheck option in the deb build options variable, now we look to see
+    if there are extra libraries we have linked to.
+
+ -- Manoj Srivastava <srivasta@debian.org>  Wed, 02 Sep 2009 00:00:40 -0500
+
+setools (3.3.6.ds-3) unstable; urgency=low
+
+  * On reflection (and in discussion on IRC), it dawned on me that the
+    issues in the bug report might be related to the jobserver not being
+    enabled when building in parallel. This version should be friendlier
+    to the jobserver.
+    Bug fix: "FTBFS: dpkg-gencontrol: error: install new files list file:
+    No such file or directory", thanks to Lucas Nussbaum
+                                                        (Closes: #543004).
+
+ -- Manoj Srivastava <srivasta@debian.org>  Sat, 22 Aug 2009 19:12:30 -0500
+
+setools (3.3.6.ds-2) unstable; urgency=low
+
+  * [ed1be40]: [topic--pointer-conversion]: Missing function prototypes
+    Missing function prototypes are likely to cause setools to segfault on
+    architectures where the size of a pointer is greater than the size
+    of an integer, such as ia64 and amd64. This patch adds the
+    prototypes, and the doxygen comments to the header file.
+    Bug fix: "implicit pointer conversions", thanks to dann frazier
+                                                          (Closes: #541862).
+
+ -- Manoj Srivastava <srivasta@debian.org>  Mon, 17 Aug 2009 11:11:16 -0500
+
+setools (3.3.6.ds-1) unstable; urgency=low
+
+  * New upstream release
+   + Change default log for seaudit to /var/log/audit/audit.log.
+   + Change context parsing in libseaudit to use libselinux functions.
+   + Add support for display of level and clearance of contexts to seaudit.
+   + Add support for filterting by level and clearance to seaudit.
+   + Modified seaudit to show the raw audit message when doubleclicking
+     an entry.
+   + Add libqpol and libapol support for policy capabilities and
+     permissive domains.
+   + Add policy capabilities and permissive domains querying to seinfo.
+   + Add support for using attribute names available in version 24
+     binary policies.
+   + Fixed error in qpol_policy_rebuild_opt() where a policy's
+     neverallow rules are expanded when the rebuild option is
+     QPOL_POLICY_OPTION_NO_RULES.
+
+ -- Manoj Srivastava <srivasta@debian.org>  Fri, 14 Aug 2009 02:40:19 -0500
+
+setools (3.3.5.ds-6) unstable; urgency=low
+
+  * [437e101]: [debiandir] Remove autogenerated files during the clean
+    process
+  * [a5fadee]:[autotools-cleanup] Remove aitogenerated files from git
+    This commit removes files that are generated by autoreconf.
+  * [140f035]: Updated build dependencies to combat FTBS.
+  *  Bug fix: "FTBFS: policy_define.c:134: undefined reference to
+    `expand_rule&#39;", thanks to Lucas Nussbaum (Closes: #527730).
+
+ -- Manoj Srivastava <srivasta@debian.org>  Sat, 20 Jun 2009 18:12:01 -0500
+
+setools (3.3.5.ds-5) unstable; urgency=low
+
+  * [a636aeb] Unpack the path object before using in string.
+
+ -- Manoj Srivastava <srivasta@debian.org>  Wed, 15 Oct 2008 00:56:40 -0500
+
+setools (3.3.5.ds-4) unstable; urgency=low
+
+  * [a4eef03] Name the file that fails to load in the "Open Policy" error dialog
+    Bug fix: "Could not open policy error is not specific", thanks to
+    Russell Coker. This is a documentation/diagnostic fix, only change
+    happens in the diagnostic string.                   (Closes: #499967).
+  * [debian-dir 9f1e6da] Add an example script to show how to use apol
+    with modular policy
+    Bug fix: "needs a script to run apol with the current list of
+    modules", thanks to Russell Coker. This is an important bugfix.
+                                                         (Closes: #499968).
+
+ -- Manoj Srivastava <srivasta@debian.org>  Tue, 14 Oct 2008 18:07:53 -0500
+
+setools (3.3.5.ds-3) unstable; urgency=low
+
+  * AArgh. Really fix important bug #498539. While setools did depend on
+    libsetools-tcl, we did not include the  paths in that package for
+    addition to the load-path. And for some reason, on my test machine,
+    all the paths are apparently in the load path.
+
+ -- Manoj Srivastava <srivasta@debian.org>  Tue, 14 Oct 2008 18:05:05 -0500
+
+setools (3.3.5.ds-2) unstable; urgency=medium
+
+  * Bug fix: "apol fails and says it can't find the libraries", thanks
+    to Russell Coker. Change the configure.ac to add
+    /usr/lib/setools/apol_tcl to the path.  This is an important bug;
+    with a one line fix, and should get into Lenny        (Closes: #498539).
+
+ -- Manoj Srivastava <srivasta@debian.org>  Fri, 12 Sep 2008 10:49:13 -0500
+
+setools (3.3.5.ds-1) unstable; urgency=high
+
+  * New upstream release, required for the new SELinux toolchain changes.
+    Closes serious bug. Closes: #492776, #493830
+    + This is the official release of SETools 3.3.5.
+    + Fixed errors in libapol's AV and TE rule rendering functions
+      where errno was not being set properly.
+    + Fixed error in apol_syn_avrule_render() where braces were not
+      being added around the target set when there is exactly one target
+      type and the keyword 'self'.  Thanks to Ryan Kagin for reporting
+      this error.
+    + Synched libqpol to libsepol version 2.0.32, policy parser to
+      2.0.16.
+    + Synched libqpol to libsepol version 2.0.26, policy parser to
+      2.0.14.
+    + Added qpol_type_get_ispermissive().  SETools can now handle
+      version 23 policy; bumped libqpol to version 1.4.
+  * Fix build system. Closes: #490329
+
+ -- Manoj Srivastava <srivasta@debian.org>  Sat, 30 Aug 2008 01:02:34 -0500
+
+setools (3.3.4.ds-4) unstable; urgency=low
+
+  * Update to the new policy version (mostly changes for
+    DEB_BUILD_OPTIONS change in policy)
+  * Bug fix: "setools: adjust build-dependency (gcj not built on alpha,
+    arm, hppa and hurd-i386)", thanks to Matthias Klose. Also adjust the
+    build process to try and not use javac when it is not available.
+                                                        (Closes: #477904).
+  * Bug fix: "setools: runs configure multiple times", thanks to Bernhard
+    R. Link.  Move to the new make -j friendly targets in ./debian/rules.
+                                                        (Closes: #477950).
+
+ -- Manoj Srivastava <srivasta@debian.org>  Thu, 05 Jun 2008 15:16:25 -0500
+
+setools (3.3.4.ds-3) unstable; urgency=low
+
+  * Add automake as a build dependency.  We need to add automake as a
+    buuild dependency, since we use autoreconf, which tries to run aclocal
+    and automake. We used to just depend on autoconf, which just
+    recommends automake -- which was therefore never pulled in on the
+    build daemons. This is a gotcha unless your build environment does not
+    install recommends by default.
+  * Bug fix: "setools: missing command name in
+    /etc/logwatch/scripts/services/seaudit-report-service", thanks to
+    Patrice DUROUX.                               (Closes: Bug#475968)
+
+ -- Manoj Srivastava <srivasta@debian.org>  Wed, 16 Apr 2008 22:54:13 -0500
+
+setools (3.3.4.ds-2) unstable; urgency=medium
+
+  * Bug fix: "setools - FTBFS: Error: symbol `fstatat64&#39; is already
+    defined", thanks to Bastian Blank and Lucas Nussbaum. The culprit was
+    a -D__attreibute(x)='' setting in libseaudit/swig/python/Makefile.am.
+    There is nothing in the commit logs to indicate that his is a
+    requirement, and things seem to compile fine and initial testing shows
+    no regressions.                          (Closes: #474428, #474904).
+  * Since we change configure.ac, and things in Makefile.am, run
+    autoreconf -f to ensure that everything gets rebuilt.
+  * Delete generated .xcf files, to prevent a FTBS when building twice
+    from source.
+
+ -- Manoj Srivastava <srivasta@debian.org>  Thu, 10 Apr 2008 03:24:24 -0500
+
+setools (3.3.4.ds-1) unstable; urgency=low
+
+  * Change build dependencies to use python-all-dev, and compile for the
+    default version, rather than hard coding version 2.4. This also paves
+    the way for trying to compile support for more than one version of
+    Python.
+  * Simplify the long descriptions; users do not generally care for names
+    of included binaries when selecting packages (and thus mitigate the
+    possibility future package development would make the long description
+    incorrect.
+  * Add correct dependencies for setools; it depends on bwidget (>= 1.8)
+    and tk.
+  * Moved libraries needed by apol back into setools from
+    libsetools-tcl. Thanks to Jason Trang for pointing out the above
+    problems and providing fixes.
+
+ -- Manoj Srivastava <srivasta@debian.org>  Mon, 31 Mar 2008 18:20:08 -0500
+
+setools (3.3.4-1) unstable; urgency=low
+
+  * New upstream release, with new apol.              Closes: Bug#438872
+  * Fixed the FTBS-twice errors.                      Closes: Bug#424259
+  * The current debian/watch works (was used to download this version)
+                                                      Closes: Bug#449853
+
+ -- Manoj Srivastava <srivasta@debian.org>  Sun, 30 Mar 2008 14:29:22 -0500
+
+setools (3.1-2) unstable; urgency=low
+
+  * Bug fix: "setools: FTBFS if built twice in a row", thanks to Martin
+    Zobel-Helas. The target is CLEAN/libsefs-dev, not CLEAN/libsef-dev.
+                                                         (Closes: #424259).
+
+ -- Manoj Srivastava <srivasta@debian.org>  Sat, 07 Jul 2007 12:51:55 -0500
+
+setools (3.1-1) unstable; urgency=low
+
+  * New upstream release. The tools have been updated to work with modular
+    policy. There has been a shlibs bump for all the shared libraries
+    packaged.
+  * Added XS-VCS-Arch and XS-VCS-Browse to debian/control.
+
+ -- Manoj Srivastava <srivasta@debian.org>  Thu, 19 Apr 2007 13:13:36 -0500
 
 setools (2.4-3) unstable; urgency=low
 
@@ -52,7 +423,7 @@ setools (2.4-2) unstable; urgency=low
     and that needs to link with the flex library, which is static;
     therefore we need to explicitly link with libfl_pic, which has the
     position independent code required for all components of a shared
-    library.  
+    library.
   * Split up setools into multiple packages, so that the shared libraries
     and devel tools can be provided separately. Split up the single
     package setools into several library packages, since it was pointed
@@ -67,7 +438,7 @@ setools (2.4-2) unstable; urgency=low
     SELinux-related packages", thanks to Sven Mueller   (Closes: #376613).
   * Provide md5sums
   * Also, tweak some file paths to better reflect a default Debian
-    installation. 
+    installation.
 
  -- Manoj Srivastava <srivasta@debian.org>  Thu,  7 Sep 2006 19:54:50 -0500
 
@@ -75,7 +446,7 @@ setools (2.4-1) unstable; urgency=low
 
   * New upstream release
     apol:
-     File contexts tab now allows for MLS range searching if 
+     File contexts tab now allows for MLS range searching if
      the loaded database is from a MLS filesystem.
      Policy statistics dialog now shows MLS and ocontexts
      summaries.
@@ -113,24 +484,24 @@ setools (2.3-1) unstable; urgency=low
       - added new tab for file system context components.
    libapol:
       - added binpol support for MLS, network contexts, and file system
-        contexts. 
+        contexts.
    seinfo:
       - added command line options for MLS components.
       - added command line options for network contexts and file system contexts.
    sesearch:
       - added command line option for searching for rules by conditional boolean name.
    seaudit:
-      - added new column in the log view for the 'comm' 
+      - added new column in the log view for the 'comm'
       - field found in auditd log files.
       - added filters for the 'comm' field and 'message' field.
    manpages:
-      -added manpages for all tools.	
+      -added manpages for all tools.
 
  -- Manoj Srivastava <srivasta@debian.org>  Tue,  7 Feb 2006 11:54:03 -0600
 
 setools (2.2-2) unstable; urgency=low
 
-  * Added a preinst check to see if we should remove the obsolete conffile 
+  * Added a preinst check to see if we should remove the obsolete conffile
      /etc/setools/seuser.conf
 
  -- Manoj Srivastava <srivasta@debian.org>  Sat, 31 Dec 2005 14:51:20 -0600
@@ -148,7 +519,7 @@ setools (2.2-1) unstable; urgency=low
      the ability to rename types.
     sechecker:
       added a new tool - a commandline modular and extensible policy
-      checker program 
+      checker program
     seuser:	removed - deprecated
     sepcut:	removed - deprecated
 
@@ -163,7 +534,7 @@ setools (2.1.3-1) unstable; urgency=low
 setools (2.1.2-1) unstable; urgency=low
 
   * New upstream release
-  
+
 
  -- Manoj Srivastava <srivasta@debian.org>  Thu, 15 Sep 2005 02:00:01 -0500
 
@@ -191,8 +562,8 @@ setools (2.0-1) unstable; urgency=low
 
   * New upstream release
       * libsefs:
-        Converted to use an on-disk SQLite database backend and 
-          re-designed API to provide the functionality to other 
+        Converted to use an on-disk SQLite database backend and
+          re-designed API to provide the functionality to other
           applications, such as apol.
       * libapol:
         Added support for analyzing direct file relabels.
@@ -212,17 +583,17 @@ setools (2.0-1) unstable; urgency=low
         Improvements to domain transition analysis interface.
         Minor bug fixes and GUI tweaks.
       * secmds:
-        Updated indexcon/searchcon to use an on-disk SQLite database 
+        Updated indexcon/searchcon to use an on-disk SQLite database
           in order to decrease memory use. These changes are not
           backwards-compatible.
       * seaudit:
         Integrated reporting functionality into GUI.
         Minor GUI tweaks.
       * sediff:
-        New gtk GUI and command-line tools for analyzing the semantic 
-          differences between two policies. The semantic difference 
-          of a policy is different from the syntactic difference in 
-          that it shows the cumulative effect of rules rather than 
+        New gtk GUI and command-line tools for analyzing the semantic
+          differences between two policies. The semantic difference
+          of a policy is different from the syntactic difference in
+          that it shows the cumulative effect of rules rather than
           doing a line-by-line comparison.
 
  -- Manoj Srivastava <srivasta@debian.org>  Sun, 13 Mar 2005 00:40:06 -0600
@@ -235,45 +606,45 @@ setools (1.5.1-1) unstable; urgency=low
      *secmds:  Fixed fatal error in replcon.
      *setools: Reverted to static linking and fixed various small bugs.
 
-     * apol: 
+     * apol:
         Advanced options added to forward domain
-         transition analysis module for performing 
-         more granular searching of transitions to 
-         domains using specified classes, permissions 
+         transition analysis module for performing
+         more granular searching of transitions to
+         domains using specified classes, permissions
          and target types.
         Minor bug fixes and improvements.
-        
-     * libapol: 
+
+     * libapol:
         Fixed to handle new libapol user structs.
         Enhanced forward domain transition analysis to
           perform more granular searching using specified
           classes, permissions and target types.
         Minor bug fixes.
-                
-     * libseuser: 
+
+     * libseuser:
         General clean up of the policy components.
         Fixed handling of users to be consistent with rest.
-        
+
      * seaudit:
         New tool (seaudit-report) for generating customized
-         reports on SE Linux audit messages using saved 
+         reports on SE Linux audit messages using saved
          seaudit view files. This tool is highly configurable
-         and can effectively integrate with the LogWatch 
-         application for automating SE Linux audit log reporting. 
-        Added feature for exporting audit messages to a 
-          file, as well as viewing all components of an audit 
+         and can effectively integrate with the LogWatch
+         application for automating SE Linux audit log reporting.
+        Added feature for exporting audit messages to a
+          file, as well as viewing all components of an audit
           message within a text view.
-        
+
      * libseaudit:
         Updated library to store audit header information, such as
          the system call timestamp and serial number.
-        Fixed parse errors for new logs.  
+        Fixed parse errors for new logs.
 
-     *  New tool (indexcon) for creating a snapshot of security 
+     *  New tool (indexcon) for creating a snapshot of security
          contexts for SE Linux filesystem entities.
-     * New tool (searchcon) for searching the SE Linux filesystem 
+     * New tool (searchcon) for searching the SE Linux filesystem
          database that was created using indexcon.
-        
+
 
  -- Manoj Srivastava <srivasta@debian.org>  Thu, 13 Jan 2005 01:25:23 -0600
 

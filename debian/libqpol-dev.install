@@ -1,0 +1,4 @@
+usr/include/qpol/
+usr/lib/*/libqpol.a
+usr/lib/*/libqpol.so
+usr/lib/*/pkgconfig/libqpol.pc

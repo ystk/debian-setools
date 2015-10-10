@@ -1,0 +1,45 @@
+Description: Fix build failure with ld --as-needed.
+Author: Matthias Klose <doko@ubuntu.com>
+Date: Sun, 05 Dec 2010 15:33:35 +0100
+Bug-Debian: http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=606020
+
+--- setools-3.3.6.ds.orig/seaudit/Makefile.am
++++ setools-3.3.6.ds/seaudit/Makefile.am
+@@ -12,10 +12,10 @@
+ AM_LDFLAGS = @DEBUGLDFLAGS@ @WARNLDFLAGS@ @PROFILELDFLAGS@
+ 
+ # need the -rdynamic flag below - glade uses dlopen() upon seaudit callbacks
+-seaudit_LDFLAGS = $(AM_LDFLAGS) \
+-	@GTK_LIBS@ @PIXBUF_LIBS@ @GLADE_LIBS@ @GTHREAD_LIBS@ -rdynamic
++seaudit_LDFLAGS = $(AM_LDFLAGS) -rdynamic
+ 
+-LDADD = @SELINUX_LIB_FLAG@ @SEAUDIT_LIB_FLAG@ @APOL_LIB_FLAG@ @QPOL_LIB_FLAG@
++LDADD = @SELINUX_LIB_FLAG@ @SEAUDIT_LIB_FLAG@ @APOL_LIB_FLAG@ @QPOL_LIB_FLAG@ \
++	@GTK_LIBS@ @PIXBUF_LIBS@ @GLADE_LIBS@ @GTHREAD_LIBS@
+ 
+ dist_setools_DATA = \
+ 	seaudit.glade \
+only in patch2:
+unchanged:
+--- setools-3.3.6.ds.orig/sediff/Makefile.am
++++ setools-3.3.6.ds/sediff/Makefile.am
+@@ -13,16 +13,15 @@
+ 	@QPOL_CFLAGS@ @APOL_CFLAGS@ @POLDIFF_CFLAGS@
+ AM_LDFLAGS = @DEBUGLDFLAGS@ @WARNLDFLAGS@ @PROFILELDFLAGS@
+ 
+-LDADD = @SELINUX_LIB_FLAG@ @POLDIFF_LIB_FLAG@ @APOL_LIB_FLAG@ @QPOL_LIB_FLAG@
++LDADD = @SELINUX_LIB_FLAG@ @POLDIFF_LIB_FLAG@ @APOL_LIB_FLAG@ @QPOL_LIB_FLAG@ \
++	@GTK_LIBS@ @PIXBUF_LIBS@ @GLADE_LIBS@ @GTHREAD_LIBS@ @XML_LIBS@
+ 
+ sediff_CFLAGS = $(AM_CFLAGS)
+ sediffx_CFLAGS = $(AM_CFLAGS) \
+ 	@GTK_CFLAGS@ @PIXBUF_CFLAGS@ @GLADE_CFLAGS@ @GTHREAD_CFLAGS@
+ 
+ # need the -rdynamic flag below - glade uses dlopen() upon sediffx callbacks
+-sediffx_LDFLAGS = $(AM_LDFLAGS) \
+-	@GTK_LIBS@ @PIXBUF_LIBS@ @GLADE_LIBS@ @GTHREAD_LIBS@ @XML_LIBS@ \
+-	-rdynamic
++sediffx_LDFLAGS = $(AM_LDFLAGS) -rdynamic
+ 
+ DEPENDENCIES = $(top_builddir)/libpoldiff/src/libpoldiff.so \
+ 	$(top_builddir)/libapol/src/libapol.so \

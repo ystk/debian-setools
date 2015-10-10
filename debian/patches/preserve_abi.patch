@@ -1,0 +1,69 @@
+Description: libsefs built with GCC 4.3 is not binary-compatible with itself built with GCC 4.4
+ That's because mangling of va_list has changed in GCC 4.4.
+ To cope with this situation, provide compatibility aliases for the affected
+ symbols and update symbol files accordingly.
+Author: Jakub Wilk <jwilk@debian.org>
+Date: Thu, 13 May 2010 17:40:33 +0200
+Bug-Debian: http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=577061
+
+--- a/libsefs/src/fcfile.cc
++++ b/libsefs/src/fcfile.cc
+@@ -689,3 +689,16 @@ const apol_vector_t *sefs_fcfile_get_fil
+ 	}
+ 	return fcfile->fileList();
+ }
++
++#if defined(__ARM_EABI__) && defined(__GNUC__) && (__GNUC__ > 4 || __GNUC__ == 4 && __GNUC_MINOR__ >= 4)
++// va_list mangling has been changed in g++ 4.4.
++// Add ABI <= g++-4.3 compatibility aliases.
++__asm__(".globl _ZN11sefs_fcfileC1EPFvPvPK11sefs_fclistiPKcS0_ES0_\n.set _ZN11sefs_fcfileC1EPFvPvPK11sefs_fclistiPKcS0_ES0_,_ZN11sefs_fcfileC1EPFvPvPK11sefs_fclistiPKcSt9__va_listES0_");
++__asm__(".globl _ZN11sefs_fcfileC1EPK11apol_vectorPFvPvPK11sefs_fclistiPKcS3_ES3_\n.set _ZN11sefs_fcfileC1EPK11apol_vectorPFvPvPK11sefs_fclistiPKcS3_ES3_,_ZN11sefs_fcfileC1EPK11apol_vectorPFvPvPK11sefs_fclistiPKcSt9__va_listES3_");
++__asm__(".globl _ZN11sefs_fcfileC1EPKcPFvPvPK11sefs_fclistiS1_S2_ES2_\n.set _ZN11sefs_fcfileC1EPKcPFvPvPK11sefs_fclistiS1_S2_ES2_,_ZN11sefs_fcfileC1EPKcPFvPvPK11sefs_fclistiS1_St9__va_listES2_");
++__asm__(".globl _ZN11sefs_fcfileC2EPFvPvPK11sefs_fclistiPKcS0_ES0_\n.set _ZN11sefs_fcfileC2EPFvPvPK11sefs_fclistiPKcS0_ES0_,_ZN11sefs_fcfileC2EPFvPvPK11sefs_fclistiPKcSt9__va_listES0_");
++__asm__(".globl _ZN11sefs_fcfileC2EPK11apol_vectorPFvPvPK11sefs_fclistiPKcS3_ES3_\n.set _ZN11sefs_fcfileC2EPK11apol_vectorPFvPvPK11sefs_fclistiPKcS3_ES3_,_ZN11sefs_fcfileC2EPK11apol_vectorPFvPvPK11sefs_fclistiPKcSt9__va_listES3_");
++__asm__(".globl _ZN11sefs_fcfileC2EPKcPFvPvPK11sefs_fclistiS1_S2_ES2_\n.set _ZN11sefs_fcfileC2EPKcPFvPvPK11sefs_fclistiS1_S2_ES2_,_ZN11sefs_fcfileC2EPKcPFvPvPK11sefs_fclistiS1_St9__va_listES2_");
++__asm__(".globl _ZN15sefs_filesystemC1EPKcPFvPvPK11sefs_fclistiS1_S2_ES2_\n.set _ZN15sefs_filesystemC1EPKcPFvPvPK11sefs_fclistiS1_S2_ES2_,_ZN15sefs_filesystemC1EPKcPFvPvPK11sefs_fclistiS1_St9__va_listES2_");
++__asm__(".globl _ZN15sefs_filesystemC2EPKcPFvPvPK11sefs_fclistiS1_S2_ES2_\n.set _ZN15sefs_filesystemC2EPKcPFvPvPK11sefs_fclistiS1_S2_ES2_,_ZN15sefs_filesystemC2EPKcPFvPvPK11sefs_fclistiS1_St9__va_listES2_");
++#endif
+--- a/libsefs/src/fclist.cc
++++ b/libsefs/src/fclist.cc
+@@ -764,3 +764,11 @@ bool query_str_compare(const char *targe
+ 		return false;
+ 	}
+ }
++
++#if defined(__ARM_EABI__) && defined(__GNUC__) && (__GNUC__ > 4 || __GNUC__ == 4 && __GNUC_MINOR__ >= 4)
++// va_list mangling has been changed in g++ 4.4.
++// Add ABI <= g++-4.3 compatibility aliases.
++__asm__(".globl _ZN11sefs_fclistC1E16sefs_fclist_typePFvPvPKS_iPKcS1_ES1_\n.set _ZN11sefs_fclistC1E16sefs_fclist_typePFvPvPKS_iPKcS1_ES1_,_ZN11sefs_fclistC1E16sefs_fclist_typePFvPvPKS_iPKcSt9__va_listES1_");
++__asm__(".globl _ZN11sefs_fclistC2E16sefs_fclist_typePFvPvPKS_iPKcS1_ES1_\n.set _ZN11sefs_fclistC2E16sefs_fclist_typePFvPvPKS_iPKcS1_ES1_,_ZN11sefs_fclistC2E16sefs_fclist_typePFvPvPKS_iPKcSt9__va_listES1_");
++__asm__(".globl _ZNK11sefs_fclist9handleMsgEiPKcPv\n.set _ZNK11sefs_fclist9handleMsgEiPKcPv,_ZNK11sefs_fclist9handleMsgEiPKcSt9__va_list");
++#endif
+--- a/libsefs/src/db.cc
++++ b/libsefs/src/db.cc
+@@ -1302,3 +1302,12 @@ bool sefs_db_is_db(const char *filename)
+ {
+ 	return sefs_db::isDB(filename);
+ }
++
++#if defined(__ARM_EABI__) && defined(__GNUC__) && (__GNUC__ > 4 || __GNUC__ == 4 && __GNUC_MINOR__ >= 4)
++// va_list mangling has been changed in g++ 4.4.
++// Add ABI <= g++-4.3 compatibility aliases.
++__asm__(".globl _ZN7sefs_dbC1EP15sefs_filesystemPFvPvPK11sefs_fclistiPKcS2_ES2_\n.set _ZN7sefs_dbC1EP15sefs_filesystemPFvPvPK11sefs_fclistiPKcS2_ES2_,_ZN7sefs_dbC1EP15sefs_filesystemPFvPvPK11sefs_fclistiPKcSt9__va_listES2_");
++__asm__(".globl _ZN7sefs_dbC1EPKcPFvPvPK11sefs_fclistiS1_S2_ES2_\n.set _ZN7sefs_dbC1EPKcPFvPvPK11sefs_fclistiS1_S2_ES2_,_ZN7sefs_dbC1EPKcPFvPvPK11sefs_fclistiS1_St9__va_listES2_");
++__asm__(".globl _ZN7sefs_dbC2EP15sefs_filesystemPFvPvPK11sefs_fclistiPKcS2_ES2_\n.set _ZN7sefs_dbC2EP15sefs_filesystemPFvPvPK11sefs_fclistiPKcS2_ES2_,_ZN7sefs_dbC2EP15sefs_filesystemPFvPvPK11sefs_fclistiPKcSt9__va_listES2_");
++__asm__(".globl _ZN7sefs_dbC2EPKcPFvPvPK11sefs_fclistiS1_S2_ES2_\n.set _ZN7sefs_dbC2EPKcPFvPvPK11sefs_fclistiS1_S2_ES2_,_ZN7sefs_dbC2EPKcPFvPvPK11sefs_fclistiS1_St9__va_listES2_");
++#endif
+--- a/libsefs/src/filesystem.cc
++++ b/libsefs/src/filesystem.cc
+@@ -731,3 +731,10 @@ extern const char *sefs_filesystem_get_d
+ 	}
+ 	return dev_name;
+ }
++
++#if defined(__ARM_EABI__) && defined(__GNUC__) && (__GNUC__ > 4 || __GNUC__ == 4 && __GNUC_MINOR__ >= 4)
++// va_list mangling has been changed in g++ 4.4.
++// Add ABI <= g++-4.3 compatibility aliases.
++__asm__(".globl _ZN15sefs_filesystemC1EPKcPFvPvPK11sefs_fclistiS1_S2_ES2_\n.set _ZN15sefs_filesystemC1EPKcPFvPvPK11sefs_fclistiS1_S2_ES2_,_ZN15sefs_filesystemC1EPKcPFvPvPK11sefs_fclistiS1_St9__va_listES2_");
++__asm__(".globl _ZN15sefs_filesystemC2EPKcPFvPvPK11sefs_fclistiS1_S2_ES2_\n.set _ZN15sefs_filesystemC2EPKcPFvPvPK11sefs_fclistiS1_S2_ES2_,_ZN15sefs_filesystemC2EPKcPFvPvPK11sefs_fclistiS1_St9__va_listES2_");
++#endif

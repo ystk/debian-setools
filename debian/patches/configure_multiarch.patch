@@ -1,0 +1,29 @@
+Description: Fix libraries detection with multiarch
+Author: Laurent Bigonville <bigon@debian.org>
+Date: Wed Mar 14 01:50:46 2012 +0100
+Forwarded: not-needed
+
+--- a/configure.ac
++++ b/configure.ac
+@@ -411,19 +411,8 @@ AC_ARG_WITH(selinux-devel,
+             selinux_devel="/usr")
+ sepol_devel_incdir="${sepol_devel}/include"
+ selinux_devel_incdir="${selinux_devel}/include"
+-dnl if /lib64 exists then use that directory, otherwise revert to just /lib
+-for dir in lib64 lib ; do
+-  sepol_devel_libdir="${sepol_devel}/${dir}"
+-  if test -f ${sepol_devel_libdir}/libsepol.so ; then
+-    break
+-  fi
+-done
+-for dir in lib64 lib ; do
+-  selinux_devel_libdir="${selinux_devel}/${dir}"
+-  if test -f ${selinux_devel_libdir}/libselinux.so ; then
+-    break
+-  fi
+-done
++sepol_devel_libdir=`eval echo ${libdir}`
++selinux_devel_libdir=`eval echo ${libdir}`
+ AC_MSG_CHECKING([for sepol/sepol.h])
+ selinux_save_CFLAGS="${CFLAGS}"
+ selinux_save_CPPFLAGS="${CPPFLAGS}"

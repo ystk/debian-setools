@@ -1,0 +1,59 @@
+Description: Use JAVACFLAGS instead of JAVAFLAGS
+Author: Laurent Bigonville <bigon@debian.org>
+Forwarded: no
+
+--- a/libapol/swig/java/Makefile.am
++++ b/libapol/swig/java/Makefile.am
+@@ -95,7 +95,7 @@ classes = $(patsubst %.java, $(package_d
+ # just depend upon the first class file, and let the Java compiler
+ # create the rest of them.
+ $(firstword $(classes)): $(java_files)
+-	$(JAVAC) $(AM_JFLAGS) $(JAVAFLAGS) -d . $^
++	$(JAVAC) $(AM_JFLAGS) $(JAVACFLAGS) -d . $^
+ 
+ $(wordlist 2,$(words $(classes)),$(classes)): $(firstword $(classes))
+ 
+--- a/libpoldiff/swig/java/Makefile.am
++++ b/libpoldiff/swig/java/Makefile.am
+@@ -70,7 +70,7 @@ classes = $(patsubst %.java, $(package_d
+ # just depend upon the first class file, and let the Java compiler
+ # create the rest of them.
+ $(firstword $(classes)): $(java_files)
+-	$(JAVAC) $(AM_JFLAGS) $(JAVAFLAGS) -d . $^
++	$(JAVAC) $(AM_JFLAGS) $(JAVACFLAGS) -d . $^
+ 
+ $(wordlist 2,$(words $(classes)),$(classes)): $(firstword $(classes))
+ 
+--- a/libqpol/swig/java/Makefile.am
++++ b/libqpol/swig/java/Makefile.am
+@@ -74,7 +74,7 @@ classes = $(patsubst %.java,$(package_di
+ # just depend upon the first class file, and let the Java compiler
+ # create the rest of them.
+ $(firstword $(classes)): $(filter %.java, $(BUILT_SOURCES))
+-	$(JAVAC) $(AM_JFLAGS) $(JAVAFLAGS) -d . $^
++	$(JAVAC) $(AM_JFLAGS) $(JAVACFLAGS) -d . $^
+ 
+ $(wordlist 2,$(words $(classes)),$(classes)): $(firstword $(classes))
+ 
+--- a/libseaudit/swig/java/Makefile.am
++++ b/libseaudit/swig/java/Makefile.am
+@@ -67,7 +67,7 @@ classes = $(patsubst %.java, $(package_d
+ # just depend upon the first class file, and let the Java compiler
+ # create the rest of them.
+ $(firstword $(classes)): $(java_files)
+-	$(JAVAC) $(AM_JFLAGS) $(JAVAFLAGS) -d . $^
++	$(JAVAC) $(AM_JFLAGS) $(JAVACFLAGS) -d . $^
+ 
+ $(wordlist 2,$(words $(classes)),$(classes)): $(firstword $(classes))
+ 
+--- a/libsefs/swig/java/Makefile.am
++++ b/libsefs/swig/java/Makefile.am
+@@ -62,7 +62,7 @@ classes = $(patsubst %.java, $(package_d
+ # just depend upon the first class file, and let the Java compiler
+ # create the rest of them.
+ $(firstword $(classes)): $(java_files)
+-	$(JAVAC) $(AM_JFLAGS) $(JAVAFLAGS) -d . $^
++	$(JAVAC) $(AM_JFLAGS) $(JAVACFLAGS) -d . $^
+ 
+ $(wordlist 2,$(words $(classes)),$(classes)): $(firstword $(classes))
+ 

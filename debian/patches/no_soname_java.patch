@@ -1,0 +1,144 @@
+Description: Do not build java module with a soname and do not generate symlinks
+Author: Laurent Bigonville <bigon@debian.org>
+Date: Tue, 13 Mar 2012 21:54:24 +0100
+
+--- a/libapol/swig/java/Makefile.am
++++ b/libapol/swig/java/Makefile.am
+@@ -1,4 +1,4 @@
+-wrappedso_DATA = libjapol.so.@libapol_version@
++wrappedso_DATA = libjapol.so
+ wrappedso_SONAME = @libapol_jswig_soname@
+ short_name = libjapol.so
+ wrappedsodir = $(libdir)
+@@ -79,9 +79,7 @@ $(firstword $(BUILT_SOURCES)): $(dist_no
+ $(wordlist 2,$(words $(BUILT_SOURCES)), $(BUILT_SOURCES)): $(firstword $(BUILT_SOURCES))
+ 
+ $(wrappedso_DATA): $(filter %.c, $(BUILT_SOURCES))
+-	$(CC) -shared -o $@ $^ $(AM_CFLAGS) $(CFLAGS) $(SWIG_JAVA_CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -Wl,-soname,$(wrappedso_SONAME)
+-	$(LN_S) -f $@ $(wrappedso_SONAME)
+-	$(LN_S) -f $@ $(short_name)
++	$(CC) -shared -o $@ $^ $(AM_CFLAGS) $(CFLAGS) $(SWIG_JAVA_CFLAGS) $(AM_LDFLAGS) $(LDFLAGS)
+ 
+ # Intentionally do not include SWIGTYPE_p_void.java below so that the
+ # Java compiler uses the one created in package
+@@ -107,8 +105,6 @@ $(wrappedjar_DATA): $(classes)
+ 	$(JAR) cfm $@ MANIFEST.MF $^
+ 
+ install-data-hook:
+-	cd $(DESTDIR)$(wrappedsodir) && $(LN_S) -f $(wrappedso_DATA) $(wrappedso_SONAME)
+-	cd $(DESTDIR)$(wrappedsodir) && $(LN_S) -f $(wrappedso_DATA) $(short_name)
+ 	$(mkdir_p) $(DESTDIR)$(javadir) && cd $(DESTDIR)$(javadir) && $(LN_S) -f $(wrappedjardir)/$(wrappedjar_DATA)
+ 
+ uninstall-local:
+--- a/libpoldiff/swig/java/Makefile.am
++++ b/libpoldiff/swig/java/Makefile.am
+@@ -1,4 +1,4 @@
+-wrappedso_DATA = libjpoldiff.so.@libpoldiff_version@
++wrappedso_DATA = libjpoldiff.so
+ wrappedso_SONAME = @libpoldiff_jswig_soname@
+ short_name = libjpoldiff.so
+ wrappedsodir = $(libdir)
+@@ -54,9 +54,7 @@ $(firstword $(BUILT_SOURCES)): $(dist_no
+ $(wordlist 2,$(words $(BUILT_SOURCES)), $(BUILT_SOURCES)): $(firstword $(BUILT_SOURCES))
+ 
+ $(wrappedso_DATA): $(filter %.c, $(BUILT_SOURCES))
+-	$(CC) -shared -o $@ $^ $(AM_CFLAGS) $(CFLAGS) $(SWIG_JAVA_CFLAGS) -DSWIGJAVA=1 $(AM_LDFLAGS) $(LDFLAGS) -Wl,-soname,$(wrappedso_SONAME)
+-	$(LN_S) -f $@ $(wrappedso_SONAME)
+-	$(LN_S) -f $@ $(short_name)
++	$(CC) -shared -o $@ $^ $(AM_CFLAGS) $(CFLAGS) $(SWIG_JAVA_CFLAGS) -DSWIGJAVA=1 $(AM_LDFLAGS) $(LDFLAGS)
+ 
+ # Intentionally do not include SWIGTYPE_p_void.java below so that the
+ # Java compiler uses the one created in package
+@@ -82,8 +80,6 @@ $(wrappedjar_DATA): $(classes)
+ 	$(JAR) cfm $@ MANIFEST.MF $^
+ 
+ install-data-hook:
+-	cd $(DESTDIR)$(wrappedsodir) && $(LN_S) -f $(wrappedso_DATA) $(wrappedso_SONAME)
+-	cd $(DESTDIR)$(wrappedsodir) && $(LN_S) -f $(wrappedso_DATA) $(short_name)
+ 	$(mkdir_p) $(DESTDIR)$(javadir) && cd $(DESTDIR)$(javadir) && $(LN_S) -f $(wrappedjardir)/$(wrappedjar_DATA)
+ 
+ uninstall-local:
+--- a/libqpol/swig/java/Makefile.am
++++ b/libqpol/swig/java/Makefile.am
+@@ -1,4 +1,4 @@
+-wrappedso_DATA = libjqpol.so.@libqpol_version@
++wrappedso_DATA = libjqpol.so
+ wrappedso_SONAME = @libqpol_jswig_soname@
+ short_name = libjqpol.so
+ wrappedsodir = $(libdir)
+@@ -64,9 +64,7 @@ $(firstword $(BUILT_SOURCES)): $(dist_no
+ $(wordlist 2,$(words $(BUILT_SOURCES)), $(BUILT_SOURCES)): $(firstword $(BUILT_SOURCES))
+ 
+ $(wrappedso_DATA): $(filter %.c, $(BUILT_SOURCES))
+-	$(CC) -shared -o $@ $^ $(AM_CFLAGS) $(CFLAGS) $(SWIG_JAVA_CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -Wl,-soname,$(wrappedso_SONAME)
+-	$(LN_S) -f $@ $(wrappedso_SONAME)
+-	$(LN_S) -f $@ $(short_name)
++	$(CC) -shared -o $@ $^ $(AM_CFLAGS) $(CFLAGS) $(SWIG_JAVA_CFLAGS) $(AM_LDFLAGS) $(LDFLAGS)
+ 
+ classes = $(patsubst %.java,$(package_dir)/%.class,$(filter %.java, $(BUILT_SOURCES)))
+ 
+@@ -86,8 +84,6 @@ $(wrappedjar_DATA): $(classes)
+ 	$(JAR) cfm $@ MANIFEST.MF $^
+ 
+ install-data-hook:
+-	cd $(DESTDIR)$(wrappedsodir) && $(LN_S) -f $(wrappedso_DATA) $(wrappedso_SONAME)
+-	cd $(DESTDIR)$(wrappedsodir) && $(LN_S) -f $(wrappedso_DATA) $(short_name)
+ 	$(mkdir_p) $(DESTDIR)$(javadir) && cd $(DESTDIR)$(javadir) && $(LN_S) -f $(wrappedjardir)/$(wrappedjar_DATA)
+ 
+ uninstall-local:
+--- a/libseaudit/swig/java/Makefile.am
++++ b/libseaudit/swig/java/Makefile.am
+@@ -1,4 +1,4 @@
+-wrappedso_DATA = libjseaudit.so.@libseaudit_version@
++wrappedso_DATA = libjseaudit.so
+ wrappedso_SONAME = @libseaudit_jswig_soname@
+ short_name = libjseaudit.so
+ wrappedsodir = $(libdir)
+@@ -51,9 +51,7 @@ $(firstword $(BUILT_SOURCES)): $(dist_no
+ $(wordlist 2,$(words $(BUILT_SOURCES)), $(BUILT_SOURCES)): $(firstword $(BUILT_SOURCES))
+ 
+ $(wrappedso_DATA): $(filter %.c, $(BUILT_SOURCES))
+-	$(CC) -shared -o $@ $^ $(AM_CFLAGS) $(CFLAGS) $(SWIG_JAVA_CFLAGS) -DSWIGJAVA=1 $(AM_LDFLAGS) $(LDFLAGS) -Wl,-soname,$(wrappedso_SONAME)
+-	$(LN_S) -f $@ $(wrappedso_SONAME)
+-	$(LN_S) -f $@ $(short_name)
++	$(CC) -shared -o $@ $^ $(AM_CFLAGS) $(CFLAGS) $(SWIG_JAVA_CFLAGS) -DSWIGJAVA=1 $(AM_LDFLAGS) $(LDFLAGS)
+ 
+ # Intentionally do not include SWIGTYPE_p_void.java below so that the
+ # Java compiler uses the one created in package
+@@ -79,8 +77,6 @@ $(wrappedjar_DATA): $(classes)
+ 	$(JAR) cfm $@ MANIFEST.MF $^
+ 
+ install-data-hook:
+-	cd $(DESTDIR)$(wrappedsodir) && $(LN_S) -f $(wrappedso_DATA) $(wrappedso_SONAME)
+-	cd $(DESTDIR)$(wrappedsodir) && $(LN_S) -f $(wrappedso_DATA) $(short_name)
+ 	$(mkdir_p) $(DESTDIR)$(javadir) && cd $(DESTDIR)$(javadir) && $(LN_S) -f $(wrappedjardir)/$(wrappedjar_DATA)
+ 
+ uninstall-local:
+--- a/libsefs/swig/java/Makefile.am
++++ b/libsefs/swig/java/Makefile.am
+@@ -1,4 +1,4 @@
+-wrappedso_DATA = libjsefs.so.@libsefs_version@
++wrappedso_DATA = libjsefs.so
+ wrappedso_SONAME = @libsefs_jswig_soname@
+ short_name = libjsefs.so
+ wrappedsodir = $(libdir)
+@@ -46,9 +46,7 @@ $(firstword $(BUILT_SOURCES)): $(dist_no
+ $(wordlist 2,$(words $(BUILT_SOURCES)), $(BUILT_SOURCES)): $(firstword $(BUILT_SOURCES))
+ 
+ $(wrappedso_DATA): $(filter %.cc, $(BUILT_SOURCES))
+-	$(CXX) -shared -o $@ $^ $(AM_CXXFLAGS) $(CXXFLAGS) $(SWIG_JAVA_CFLAGS) -DSWIGJAVA=1 $(AM_LDFLAGS) $(LDFLAGS) -Wl,-soname,$(wrappedso_SONAME)
+-	$(LN_S) -f $@ $(wrappedso_SONAME)
+-	$(LN_S) -f $@ $(short_name)
++	$(CXX) -shared -o $@ $^ $(AM_CXXFLAGS) $(CXXFLAGS) $(SWIG_JAVA_CFLAGS) -DSWIGJAVA=1 $(AM_LDFLAGS) $(LDFLAGS)
+ 
+ # Intentionally do not include SWIGTYPE_p_void.java below so that the
+ # Java compiler uses the one created in package
+@@ -74,8 +72,6 @@ $(wrappedjar_DATA): $(classes)
+ 	$(JAR) cfm $@ MANIFEST.MF $^
+ 
+ install-data-hook:
+-	cd $(DESTDIR)$(wrappedsodir) && $(LN_S) -f $(wrappedso_DATA) $(wrappedso_SONAME)
+-	cd $(DESTDIR)$(wrappedsodir) && $(LN_S) -f $(wrappedso_DATA) $(short_name)
+ 	$(mkdir_p) $(DESTDIR)$(javadir) && cd $(DESTDIR)$(javadir) && $(LN_S) -f $(wrappedjardir)/$(wrappedjar_DATA)
+ 
+ uninstall-local:
